@@ -35,6 +35,7 @@ namespace WindowsGame2.menu
             exit = new MenuEntryChoice("Back to Main Menu", null, this.font, Color.White, Color.Yellow);
             save = new MenuEntryChoice("Save Game", null, this.font, Color.White, Color.Yellow);
 
+
             this.root.getChild(0).addChildComponent(resume);
             this.root.getChild(0).addChildComponent(exit);
             this.root.getChild(0).addChildComponent(save);
