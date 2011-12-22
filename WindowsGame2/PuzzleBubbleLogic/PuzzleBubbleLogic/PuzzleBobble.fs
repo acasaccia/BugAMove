@@ -317,36 +317,31 @@ let EqualsColor (c1 : Microsoft.Xna.Framework.Color, c2:Microsoft.Xna.Framework.
         //Console.WriteLine("different colors")
         false
 
-let map  = ref Map.empty
 let AvailableColorMap (grid : Option<Ball> [,]) : Map<uint32, ColorCounter> =
+    let  map=  ref<Map<uint32, ColorCounter>> Map.empty
     
     grid |> Array2D.iteri(fun row col ball -> match ball with 
                                                     |Some(ball) -> 
-                                                    //ball.visited <- false
-                                                        let col : Option<ColorCounter> = map.Value.TryFind(ball.color.PackedValue)
-                                                        match col with 
+                                                        let color : Option<ColorCounter> = map.Value.TryFind(ball.color.PackedValue)
+                                                        match color with 
                                                         |Some c -> 
                                                             map.contents <- map.Value.Remove(ball.color.PackedValue)
                                                             map.contents <- map.Value.Add(ball.color.PackedValue, {c with Count = c.Count + 1})
-                                                        //    Console.WriteLine("update counter increment col" + ball.color.ToString())
                                                         |None -> map.contents <- map.Value.Add(ball.color.PackedValue, {Count = 1; Color = ball.color})
                                                     |None -> ()
                             )
-   // Console.WriteLine("AvailableColorMap Length " + map.Value.Count.ToString())
+    
     map.Value
 
 let PrintVisitedBallsIndex (grid : Option<Ball> [,]) =
     grid |> Array2D.iteri(fun row col ball -> match ball with 
                                                 |Some(ball) -> 
-                                                //ball.visited <- false
                                                 if ball.visited then Console.WriteLine("ball visited " + row.ToString() + " " +  col.ToString() )
                                                 |None -> ())
 let GridBallsSetUnvisited (grid : Option<Ball> [,]) =
     grid |> Array2D.iteri(fun row col ball -> match ball with 
                                                 |Some(ball) -> 
                                                 grid.[row,col] <- Some({ball with visited = false})
-                                                //ball.visited <- false
-                                                //Console.WriteLine("now ball " + row.ToString() + " " +  col.ToString() + " visited " + ball.visited.ToString())
                                                 |None -> ())
 
 let DeleteUnvisitedGridBalls(grid : Option<Ball> [,]) : List<FallingBall> = 
@@ -366,13 +361,7 @@ let DeleteUnvisitedGridBalls(grid : Option<Ball> [,]) : List<FallingBall> =
                                                     |None -> ())
     l.Value
     
-//let DeleteUnvisitedGridBalls(grid : Option<Ball> [,])  =                       
-//     grid |> Array2D.iteri(fun row col ball -> match ball with 
-//                                                    |Some(ball) -> 
-//                                                        if (ball.visited = false) then
-//                                                            grid.[row,col] <- None
-//                                                    |None -> ())
-        
+
     
 let ContainsIndex (r:int, c:int, list:List<int * int>) : bool = List.exists(fun elem ->
                                                                                     let row, col = elem
@@ -417,17 +406,15 @@ let GetSameColorNeighs(grid : Option<Ball> [,], row : int , col : int, color : M
                    
         if (row < 0 || col < 0 || row > MaxLineNumber - 1 || col > BallsPerLine - 1) then
             ()
-           // b := true
         else
             let ball = grid.[row,col]
             match ball with 
                 |Some(ball) -> 
                     if ((ball.visited) = true || not <| EqualsColor (ball.color, color)) then
-                        grid.[row,col] <-Some({ball with visited = true})//ball.visited <- true
+                        grid.[row,col] <-Some({ball with visited = true})
                         ()
                     else
                         grid.[row,col] <-Some({ball with visited = true})
-                        //ball.visited <- true
                         yield row,col
                         if (row % 2 = 0) then
                             yield! loop(row  + 1, col )
@@ -454,6 +441,7 @@ let AvailableColorLis(map : Map<uint32,ColorCounter>) = //: List<Microsoft.Xna.F
 let DockBall (game_state: GameState, grid: Option<Ball> [,] , ball : Ball) : List<FallingBall> = 
    
     let deletedList : ref<List<FallingBall>> = ref<List<FallingBall>> List.empty
+    
     let row , col = CoordinateToGrid(!game_state.GridSteps, ball.center)
  //   Console.WriteLine("DockBall at " + row.ToString() + " " + col.ToString())
     let row =   if (row < 0 ) then 
@@ -523,7 +511,7 @@ let MoveDownDockedBalls(list : List<Ball>, delta: float32<m> ) : List<Ball> =
 
 let MoveDownGrid (game_state: GameState) =
     game_state.GridSteps := !game_state.GridSteps + 1 
-    //game_state.Grid :=
+    
     game_state.Grid := Array2D.init<Option<Ball>> MaxLineNumber BallsPerLine (fun row col->
         match (!game_state.Grid).[row,col] with
             |Some(n) -> 
@@ -590,39 +578,12 @@ let random_level_state () : GameState =
 
 
 
-//let mutable game_state  = 
-//    empty_level_state()
 
 //note: the following code is ugly, but it's a workaround. In certain situations game_state value should be changed (game reset, new level, ...).
 // I did it before declaring it mutable but I had some trouble in de/serialize a mutable record. So every 
 let  game_state :GameState = 
     //random_level_state()//empty_level_state()
     empty_level_state()
-//type foo =
-//    {
-//        LevelStatus : LevelStatus
-//        Grid : Variable<Option<Ball> [,]>
-//        GridSteps : Variable<int>
-//        ReadyBall : Variable<Ball>
-//        ClimbingBalls : Variable<List<ClimbingBall>>
-//        Arrow : Arrow
-//        RoofStepTimeDelta : float32<s>
-//        FallingBalls : Variable<List<FallingBall>>
-//        SoundOn : Variable<bool>
-//    }
-//let empty_level_foo () : foo =
-//    {
-//    LevelStatus = InitLevelStatus()
-//    Grid = Variable ( fun () -> Array2D.init<Option<Ball>> MaxLineNumber BallsPerLine (fun row col-> None));
-//    GridSteps = Variable (fun ()-> 0)
-//    ReadyBall = Variable (fun () ->  new_random_ball(Map.empty))
-//    ClimbingBalls = Variable(fun () -> [])
-//    FallingBalls = Variable(fun () -> [])
-//    Arrow =  { center = FloorMiddlePoint ; angle = Variable(ArrowAngleInit)}//angle = Variable(fun () -> Microsoft.Xna.Framework.MathHelper.PiOver2)}//- Microsoft.Xna.Framework.MathHelper.PiOver2)};
-//    RoofStepTimeDelta = DefaultRoofStepTimeDelta
-//    SoundOn = variable(true)
-//    }
-//let bar :foo = empty_level_foo()
 
 let setLevelStatus(s) = 
     game_state.LevelStatus.AvailableColors := !s.AvailableColors 
@@ -644,26 +605,12 @@ let setGameState(newGameState : GameState) =
 let setup_random_level() = 
     setGameState(random_level_state())
 let load_game_state (state : GameState) =
-    //game_state =  
-   Console.WriteLine("PuzzleBobble: load_game_state at time " + state.LevelStatus.ElapsedTime.Value.ToString())
+//   Console.WriteLine("PuzzleBobble: load_game_state at time " + state.LevelStatus.ElapsedTime.Value.ToString())
    setGameState({state with LevelStatus = {state.LevelStatus with Status =  variable(GameStatus.Ready)}})//<- state
    Casanova.commit_variable_updates()
-   Console.WriteLine("NOW GAME TIME  " + game_state.LevelStatus.ElapsedTime.Value.ToString())
+//   Console.WriteLine("NOW GAME TIME  " + game_state.LevelStatus.ElapsedTime.Value.ToString())
    
-//let load_game_state (state : GameState) =
-//    //game_state =  
-//    setGameState(state)//<- state
-//    
-//let set_up_random_level () = 
-//  //  Console.WriteLine("setup random levels")
-//  //  game_state <- random_level_state()
-//    setGameState(random_level_state())
-// //   initialize_level(game_state, game_state.LevelStatus)
-//    
-//let set_up_empty_level () =
-//  //  Console.WriteLine("setup empty level")
-//    setGameState(empty_level_state())
-  //  game_state <- empty_level_state()
+
 let ListOfDockedBalls (b:Ball) : Ball list =
     !game_state.Grid |> Seq.cast<Option<Ball>> |> Seq.fold (fun l n -> match n with 
                                                                        |Some(n) -> n :: l
@@ -690,7 +637,8 @@ let update_state(dt:float32<s>) =
     game_state.LevelStatus.TopScores := !game_state.LevelStatus.TopScores
     match !game_state.LevelStatus.Status with
         | GameStatus.Playing ->
-             game_state.LevelStatus.ElapsedTime := !game_state.LevelStatus.ElapsedTime + dt
+      //      Console.WriteLine("Playing")
+            game_state.LevelStatus.ElapsedTime := !game_state.LevelStatus.ElapsedTime + dt
         | GameStatus.Win  ->
             Console.WriteLine("Win")
             game_state.LevelStatus.ElapsedTime := !game_state.LevelStatus.ElapsedTime
@@ -698,22 +646,24 @@ let update_state(dt:float32<s>) =
             (Console.WriteLine("Lost"))
             game_state.LevelStatus.ElapsedTime := !game_state.LevelStatus.ElapsedTime                
         | GameStatus.Ready  ->
+            Console.WriteLine("Ready")
             ()// (Console.WriteLine("Ready"))
             game_state.LevelStatus.ElapsedTime := !game_state.LevelStatus.ElapsedTime
         | _ -> ()
    
 
 
-//COLEOTTERO    
  //   let colMap = AvailableColorMap(!game_state.Grid)
     game_state.LevelStatus.Score := !game_state.LevelStatus.Score
-    game_state.LevelStatus.AvailableColors := AvailableColorMap(!game_state.Grid)
-    game_state.LevelStatus.AvailableColors := !game_state.LevelStatus.AvailableColors
+  //  game_state.LevelStatus.AvailableColors := AvailableColorMap(!game_state.Grid)
+   // game_state.LevelStatus.AvailableColors := !game_state.LevelStatus.AvailableColors
+    //Console.WriteLine("available colors : " + AvailableColorMap(!game_state.Grid).Count.ToString())
     game_state.LevelStatus.Status := //!game_state.LevelStatus.Status
         
-        if (!game_state.LevelStatus.Status) = GameStatus.Playing && (!game_state.LevelStatus.AvailableColors).IsEmpty then
+        if (!game_state.LevelStatus.Status) = GameStatus.Playing && AvailableColorMap(!game_state.Grid).IsEmpty then
             game_state.LevelStatus.TopScores := {PlayerName = "foobardfsfds"; PlayerScore = 14} :: !game_state.LevelStatus.TopScores//[ List.sortWith CompareScores ({PlayerName = "foobardfsfds"; PlayerScore = 14} :: !game_state.LevelStatus.TopScores) ]
-            Console.WriteLine("win new score length " + game_state.LevelStatus.TopScores.Value.Length.ToString())
+            //Console.WriteLine("win new score length " + game_state.LevelStatus.TopScores.Value.Length.ToString())
+        //    Console.WriteLine("available colors : " + (!game_state.LevelStatus.AvailableColors).Count.ToString())
             GameStatus.Win
         else 
             (!game_state.LevelStatus.Status) 
@@ -773,13 +723,13 @@ let private main () =
                 game_state.SoundOn := not <| !game_state.SoundOn
             return ()
         }
-    let roof_down() =
-        co{
-            do! wait 15.0
-         //   MoveDownGrid(game_state)
-          //  game_state.DockedBalls := MoveDownDockedBalls(!game_state.DockedBalls, 0.4f<m>)
-            return ()
-        }
+//    let roof_down() =
+//        co{
+//            do! wait 15.0
+//         //   MoveDownGrid(game_state)
+//          //  game_state.DockedBalls := MoveDownDockedBalls(!game_state.DockedBalls, 0.4f<m>)
+//            return ()
+//        }
     let shoot_ball() =
         co{
             do! yield_
@@ -790,7 +740,7 @@ let private main () =
                     if (!game_state.SoundOn) then
                         Sound.PuzzleBobbleSoundManager.playSound(Sound.PuzzleBobbleSoundManager.SoundsEvent.BALL_SHOOT);
                     game_state.ClimbingBalls :=  BallShoot(!game_state.ReadyBall, !game_state.Arrow.angle)  :: !game_state.ClimbingBalls
-                    let newb =  RandomBallFromRemainingColors(!game_state.LevelStatus.AvailableColors)//new_random_ball (!game_state.LevelStatus.AvailableColors)
+                    let newb =  RandomBallFromRemainingColors(AvailableColorMap(!game_state.Grid))//new_random_ball (!game_state.LevelStatus.AvailableColors)
                     game_state.ReadyBall := newb
                     do! wait 0.3
             return ()
@@ -811,7 +761,7 @@ let private main () =
             do! yield_
             return ()
         }
-    (repeat_ (idle_co()) .||> repeat_ (move_arrow()) .||> repeat_ (shoot_ball()).||> repeat_ (roof_down()) .||> repeat_(input_handler()))
+    (repeat_ (idle_co()) .||> repeat_ (move_arrow()) .||> repeat_ (shoot_ball()) .||> repeat_(input_handler()))
 
 let mutable update_main = 
     main()
