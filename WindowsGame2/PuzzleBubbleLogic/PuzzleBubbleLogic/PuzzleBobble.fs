@@ -327,10 +327,12 @@ let AvailableColorMap (grid : Option<Ball> [,]) : Map<uint32, ColorCounter> =
                                                         match col with 
                                                         |Some c -> 
                                                             map.contents <- map.Value.Remove(ball.color.PackedValue)
-                                                            map.contents <- map.Value.Add(ball.color.PackedValue, {col.Value with Count = col.Value.Count + 1})
+                                                            map.contents <- map.Value.Add(ball.color.PackedValue, {c with Count = c.Count + 1})
+                                                        //    Console.WriteLine("update counter increment col" + ball.color.ToString())
                                                         |None -> map.contents <- map.Value.Add(ball.color.PackedValue, {Count = 1; Color = ball.color})
                                                     |None -> ()
                             )
+   // Console.WriteLine("AvailableColorMap Length " + map.Value.Count.ToString())
     map.Value
 
 let PrintVisitedBallsIndex (grid : Option<Ball> [,]) =
@@ -469,14 +471,9 @@ let DockBall (game_state: GameState, grid: Option<Ball> [,] , ball : Ball) : Lis
             if l.Length >= BallClusterSize then
                 for col in 0 .. BallsPerLine - 1 do          
                     VisitGridExcluding (grid, 0, col , l) 
-                //DeleteUnvisitedGridBalls(!grid)   
                 deletedList.contents <- List.concat [ DeleteUnvisitedGridBalls(grid)  ; !game_state.FallingBalls]
-//                game_state.FallingBalls :=
-//                    List.concat [ DeleteUnvisitedGridBalls(!grid)  ; !game_state.FallingBalls]
-                //Console.WriteLine("DELETED BALL LENGTH " + var.Length.ToString())
                 GridBallsSetUnvisited(!game_state.Grid)
             UpdateScore(l.Length, game_state)
-        //do grid := Array2D.copy !grid  
     deletedList.contents 
 
 let ApplyVelocityToVector (p:Vector3<m> , v: Vector3<m/s> ,dt : float32<s> ) : Vector3<m> =
@@ -599,8 +596,8 @@ let random_level_state () : GameState =
 //note: the following code is ugly, but it's a workaround. In certain situations game_state value should be changed (game reset, new level, ...).
 // I did it before declaring it mutable but I had some trouble in de/serialize a mutable record. So every 
 let  game_state :GameState = 
-    random_level_state()//empty_level_state()
-
+    //random_level_state()//empty_level_state()
+    empty_level_state()
 //type foo =
 //    {
 //        LevelStatus : LevelStatus
@@ -643,14 +640,16 @@ let setGameState(newGameState : GameState) =
     setLevelStatus(newGameState.LevelStatus)
     game_state.ReadyBall := !newGameState.ReadyBall
     game_state.SoundOn := !newGameState.SoundOn
-
+    //Casanova.commit_variable_updates()
 let setup_random_level() = 
-    ()//setGameState(random_level_state())
+    setGameState(random_level_state())
 let load_game_state (state : GameState) =
     //game_state =  
-    //()
+   Console.WriteLine("PuzzleBobble: load_game_state at time " + state.LevelStatus.ElapsedTime.Value.ToString())
    setGameState({state with LevelStatus = {state.LevelStatus with Status =  variable(GameStatus.Ready)}})//<- state
    Casanova.commit_variable_updates()
+   Console.WriteLine("NOW GAME TIME  " + game_state.LevelStatus.ElapsedTime.Value.ToString())
+   
 //let load_game_state (state : GameState) =
 //    //game_state =  
 //    setGameState(state)//<- state
@@ -687,7 +686,7 @@ let CheckForCollision (b : ClimbingBall) : bool =
 
 
 let update_state(dt:float32<s>) =
-    
+ //   Console.WriteLine("update_state")
     game_state.LevelStatus.TopScores := !game_state.LevelStatus.TopScores
     match !game_state.LevelStatus.Status with
         | GameStatus.Playing ->
@@ -706,11 +705,11 @@ let update_state(dt:float32<s>) =
 
 
 //COLEOTTERO    
-    let colMap = AvailableColorMap(!game_state.Grid)
+ //   let colMap = AvailableColorMap(!game_state.Grid)
     game_state.LevelStatus.Score := !game_state.LevelStatus.Score
-    game_state.LevelStatus.AvailableColors := colMap//AvailableColorMap(game_state.Grid)
-  
-    game_state.LevelStatus.Status :=
+    game_state.LevelStatus.AvailableColors := AvailableColorMap(!game_state.Grid)
+    game_state.LevelStatus.AvailableColors := !game_state.LevelStatus.AvailableColors
+    game_state.LevelStatus.Status := //!game_state.LevelStatus.Status
         
         if (!game_state.LevelStatus.Status) = GameStatus.Playing && (!game_state.LevelStatus.AvailableColors).IsEmpty then
             game_state.LevelStatus.TopScores := {PlayerName = "foobardfsfds"; PlayerScore = 14} :: !game_state.LevelStatus.TopScores//[ List.sortWith CompareScores ({PlayerName = "foobardfsfds"; PlayerScore = 14} :: !game_state.LevelStatus.TopScores) ]
@@ -726,7 +725,7 @@ let update_state(dt:float32<s>) =
         !game_state.Arrow.angle 
     
     game_state.Grid := !game_state.Grid
-//   // game_state.LevelStatus.AvailableColors := !game_state.LevelStatus.AvailableColors 
+    game_state.LevelStatus.AvailableColors := !game_state.LevelStatus.AvailableColors 
     game_state.FallingBalls := [for fb in !game_state.FallingBalls do
                                     let newBallPos = MoveFallingBall(fb, dt) 
                                     if (newBallPos.center.Length < BallMaxDistance) then

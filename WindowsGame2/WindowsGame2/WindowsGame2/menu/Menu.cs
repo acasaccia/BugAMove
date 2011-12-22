@@ -91,8 +91,9 @@ namespace WindowsGame2
 
     private void LoadGame()
     {
-        this.gameLogic.OnLoadGame();
+        
         this.StartLevel();
+        this.gameLogic.OnLoadGame();
     }
     public override void Initialize()
     {
@@ -172,7 +173,8 @@ namespace WindowsGame2
       
         Game.Components.Remove(this);
         this.Dispose();
-
+        PuzzleBobble.setup_random_level();
+        Casanova.commit_variable_updates();
         gameLogic.start();
 
     }

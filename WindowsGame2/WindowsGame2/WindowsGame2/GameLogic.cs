@@ -199,20 +199,7 @@ namespace WindowsGame2
     public override void Initialize()
     {
         Console.WriteLine("GameLogic: Initialize");
- //       gameWorld = (WorldData2D)Game.Services.GetService(typeof(WorldData2D));
-#if FOO
-      if (!loaded)
-      {
-        ball.position = new Vector2(0.0f, 0.0f);
-        ball.velocity = new Vector2(10.0f, -200.0f);//-150.0f);
-        arrow.position = new Vector2((this.grid.gridDimension.X / 2) - (arrow.size.X / 2),
-            this.grid.gridDimension.Y - arrow.size.Y);//new Vector2((gameWorld.width / 2) - (arrow.size.X /2), gameWorld.height - (arrow.size.Y ));
-        Vector2 delta = arrow.size - grid.ballSize  ;
-        gameWorld.activeBall = this.createNewBall();//new Ball(this.grid.ballSize, this.arrow.position+  delta / 2, new Vector2(0.0f, 0.0f), new Vector2(0.0f, 0.0f), Color.Red);
-      }
 
-      rendering_data = (RenderingData)Game.Services.GetService(typeof(RenderingData));
-#endif
       this.cameraInput = Game.Services.GetService(typeof(ICameraInputService)) as ICameraInputService;
       //if (cameraInput != null)
       //{
@@ -247,73 +234,13 @@ namespace WindowsGame2
     }
     public static void Game_Exiting(object sender, EventArgs e)
     {
-      using (var stream = File.Open("savegame.sav", FileMode.Create))
-      {
-        var binary_formatter = new BinaryFormatter();
-       // binary_formatter.Serialize(stream, ball);
-      }
-    }
-#if FOO
-    private Ball createNewBall() {
-        Vector2 delta = arrow.size - grid.ballSize;
-        Random rand = new Random();
-        IList<Color> colors = this.grid.getAvailableColors();
-        return new Ball(this.grid.ballSize, this.arrow.position + delta / 2, new Vector2(0.0f, 0.0f), new Vector2(0.0f, 0.0f), colors[rand.Next(0,colors.Count)]);
+        //using (var stream = File.Open("savegame.sav", FileMode.Create))
+        //{
+        //    var binary_formatter = new BinaryFormatter();
+        //    binary_formatter.Serialize(stream, ball);
+        //}
     }
 
-    private void fireActiveBall() {
-        gameWorld.activeBall.velocity.X = (float)Math.Sin(-MathHelper.ToRadians(arrow.angle)) * -60;
-        gameWorld.activeBall.velocity.Y = (float)Math.Cos(-MathHelper.ToRadians(arrow.angle)) * -60;//-500.0f;
-    }
-
-    private void moveActiveBall(float dt) {
-        //if (gameWorld.activeBall.velocity.X == 0 && gameWorld.activeBall.velocity.Y == 0)
-        //    return;
-        //var k1 = gameWorld.activeBall.Derivative();
-        //var k2 = (0.5f * gameWorld.activeBall + 0.5f * dt * k1).Derivative();
-        //var k3 = (0.75f * gameWorld.activeBall + 0.75f * dt * k1).Derivative();
-
-        //Ball ballNew;
-        //ballNew = gameWorld.activeBall + (2.0f / 9.0f) * dt * k1 +
-        //        (1.0f / 3.0f) * dt * k2 +
-        //        (4.0f / 9.0f) * dt * k3;
-        //gameWorld.activeBall.position = ballNew.position;
-        //gameWorld.activeBall.velocity = ballNew.velocity;
-        Vector2 newPos = gameWorld.activeBall.position + gameWorld.activeBall.velocity * dt;
-        //gameWorld.activeBall.position = newPos;
-       // gameWorld.activeBall.position = newPos;
-        if (!this.grid.isFreeAt(newPos))
-        {
-            this.grid.insertBallAt(gameWorld.activeBall, gameWorld.activeBall.position);
-            IList<Ball> visited = new List<Ball>();
-        //    this.grid.visitSameColorBalls(gameWorld.activeBall, visited, gameWorld.activeBall.color);
-            this.grid.cleanVisitedBalls();
-            if (visited.Count > 3) {
-                for (int i = 0; i < visited.Count; i++) {
-                //    Console.WriteLine("i " + i);
-                  //  this.grid.removeBallAt(visited[i].gridPosition.X, visited[i].gridPosition.Y);
-                    this.grid.removeBallAt(visited[i].gridPosition);
-                }
-            }
-            Vector2 delta = arrow.size - grid.ballSize;
-
-            gameWorld.activeBall = this.createNewBall();
-                //new Ball(this.grid.ballSize, new Vector2 (this.arrow.position.X + delta.X / 2, this.arrow.position.Y + delta.Y /2),
-                //new Vector2(0.0f, 0.0f), new Vector2(0.0f, 0.0f), Color.White);
-            return;
-        }
-        else {
-       //     Console.WriteLine("freepos");
-            gameWorld.activeBall.position = newPos;
-        }
-        if (gameWorld.activeBall.position.X + gameWorld.activeBall.size.X> grid.gridDimension.X || // gameWorld.width ||
-            gameWorld.activeBall.position.X < 0) {
-
-                gameWorld.activeBall.velocity.X *= -1;
-        }
-    
-    }
-#endif
     public override void Update(GameTime gameTime)
     {
         //if (InputManager.getState().GamePaused)
@@ -333,6 +260,7 @@ namespace WindowsGame2
 
                         //Casanova.commit_variable_updates();
                         System.Threading.Thread.Sleep(5000);
+                        this.pause();
                         this.OnBackToMenu();
                         break;
                     }
@@ -345,6 +273,7 @@ namespace WindowsGame2
 
                         //Casanova.commit_variable_updates();
                         System.Threading.Thread.Sleep(5000);
+                        this.pause();
                         this.OnBackToMenu();
                         break;
                     }

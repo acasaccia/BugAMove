@@ -28,7 +28,7 @@ namespace PuzzleBobbleInputHandling
             inputState = new PuzzleBobbleGameInputState();
             Game.Services.AddService(typeof(InputManager),this);
 
-            this.inputDevice = InputDevice.KEYBOARD;//InputDevice.GAMEPAD;
+            this.inputDevice = InputDevice.GAMEPAD;
         }
         public static PuzzleBobbleGameInputState getState()
         {
@@ -58,36 +58,41 @@ namespace PuzzleBobbleInputHandling
             if (!running)
                 return;
 
-            switch (this.inputDevice) {
+            //switch (this.inputDevice) {
 
-                case InputDevice.GAMEPAD: {
+            //    case InputDevice.GAMEPAD: {
                     // -----------GAMEPAD HANDLER ---------------------- 
-                    var gamePadState = GamePad.GetState(PlayerIndex.One);
+            var state = Keyboard.GetState();
+            if (state != null)
+            {
 
-                    inputState.ArrowMovedLeft = gamePadState.IsButtonDown(Buttons.DPadLeft);
-                    inputState.ArrowMovedRight = gamePadState.IsButtonDown(Buttons.DPadRight);
-                    inputState.BallShoot = gamePadState.IsButtonDown(Buttons.A);
-                    inputState.Continue = gamePadState.IsButtonDown(Buttons.B);
-                    
-                    break;
-                }
-                default:
-                {
-                    // -----------KEYBOARD HANDLER ---------------------- 
-
-                    var state = Keyboard.GetState();
-
-                    inputState.ArrowMovedLeft = state.IsKeyDown(Keys.Left);
-                    inputState.ArrowMovedRight = state.IsKeyDown(Keys.Right);
-                    inputState.BallShoot = state.IsKeyDown(Keys.Space);
-                    inputState.Continue = state.IsKeyDown(Keys.Enter);
-                    inputState.SoundOn = state.IsKeyDown(Keys.M);
-                    inputState.SoundOff = state.IsKeyDown(Keys.M);
-                    //    
-                    break;
-                }
-            
+                inputState.ArrowMovedLeft = state.IsKeyDown(Keys.Left);
+                inputState.ArrowMovedRight = state.IsKeyDown(Keys.Right);
+                inputState.BallShoot = state.IsKeyDown(Keys.Space);
+                inputState.Continue = state.IsKeyDown(Keys.Enter);
+                inputState.SoundOn = state.IsKeyDown(Keys.M);
+                inputState.SoundOff = state.IsKeyDown(Keys.M);
             }
+
+            var gamePadState = GamePad.GetState(PlayerIndex.One);
+            if (gamePadState != null)
+            {
+                inputState.ArrowMovedLeft |= gamePadState.IsButtonDown(Buttons.DPadLeft);
+                inputState.ArrowMovedRight |= gamePadState.IsButtonDown(Buttons.DPadRight);
+                inputState.BallShoot |= gamePadState.IsButtonDown(Buttons.A);
+                inputState.Continue |= gamePadState.IsButtonDown(Buttons.B);
+            }      
+                //    break;
+                //}
+                //default:
+                //{
+                //    // -----------KEYBOARD HANDLER ---------------------- 
+
+           
+            //        break;
+            //    }
+            
+            //}
           //  Console.WriteLine("InputManager : Update");
            // inputState = new PuzzleBobbleGameInputState();
             // -----------KEYBOARD HANDLER ----------------------
