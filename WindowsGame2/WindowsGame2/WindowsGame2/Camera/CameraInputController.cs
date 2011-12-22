@@ -12,10 +12,6 @@ namespace WindowsGame2
    
     public interface ICameraInputService
     {
-       
-      // event CameraEvent CameraMoved;
-      //   delegate void CameraEvent(object sender, CameraEventArg args);
-      //  event CameraEvent changedCamera;
         event Action<Camera.CameraTransformations, float > changedCamera;
         event Action gamePaused;
         event Action gameResumed;
@@ -23,11 +19,10 @@ namespace WindowsGame2
     }
     class CameraInputController : GameComponent, ICameraInputService
     {
-        //public event CameraEvent changedCamera;
         public event Action<Camera.CameraTransformations, float > changedCamera;
         public event Action gamePaused;
         public event Action gameResumed;
-
+     
         //CONSTRUCTOR
         public CameraInputController(Game game) : base(game) {
 
