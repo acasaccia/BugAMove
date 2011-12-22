@@ -61,21 +61,5 @@ namespace WindowsGame2
         base.Initialize();
     }
 
-    //protected override void Update(GameTime gameTime)
-    //{
-    //  if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-    //    this.Exit();
-
-    //  base.Update(gameTime);
-    //}
-
-    ///// <summary>
-    ///// This is called when the game should draw itself.
-    ///// </summary>
-    ///// <param name="gameTime">Provides a snapshot of timing values.</param>
-    //protected override void Draw(GameTime gameTime)
-    //{
-    //  base.Draw(gameTime);
-    //}
   }
 }
