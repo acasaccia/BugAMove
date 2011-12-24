@@ -307,10 +307,13 @@ namespace WindowsGame2
         mergedSphere.Center.Y = 0;
         return mergedSphere;
     }
+
+   
     Model Box;
     //BoundingBox BoxBounds;
     BoundingSphere BoxMergedBoundingSphere;
     BoundingBox BoxBoundingBox;
+    Model skyDome;
     //pillarBox;
     protected override void LoadContent()
     {
@@ -319,7 +322,8 @@ namespace WindowsGame2
       arrow = Game.Content.Load<Model>("balestra");
       this.font = game.Content.Load<SpriteFont>("BigFont");
       Box = Game.Content.Load<Model>("Crate1");
-
+ //     this.world = Game.Content.Load<Model>("RoadSign");
+   
       //this.BoxMergedBoundingSphere = new BoundingSphere();
       //foreach (var mesh in Box.Meshes)
       //{
@@ -406,16 +410,15 @@ namespace WindowsGame2
         }
         float roofScaleX = PuzzleBobble.BoxDimension.X / XSIZE;
         this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 1.0f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y + YSIZE - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, 0.0f), Vector3.Zero, null);
-        
+
+       
         //pretty works 
         //for (int i = 0; i < 8; i++)
         //{
         //    this.DrawModel(Box, 1.0f, new Vector3(-size + ce.X, +size - ce.Y + (size * 2 * i), -size), Vector3.Zero, null);
         //    this.DrawModel(Box, 1.0f, new Vector3(PuzzleBobble.BoxDimension.X + size - ce.X, +size - ce.Y + (size * 2 * i), -size), Vector3.Zero, null);
         //}
-   //     Vector3 roofSize = new Vector3(size + ce.X, PuzzleBobble.BoxDimension.Y - ce.Y - (PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter), -size);
-   //     float roofScale = roofSize.X / PuzzleBobble.BallDiameter;
-        //this.DrawModel(Box, roofScale, roofSize, Vector3.Zero, Color.Red);
+
         
         if (PuzzleBobble.game_state.LevelStatus.Status.Value == PuzzleBobble.GameStatus.Ready)
         {

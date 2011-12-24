@@ -116,7 +116,7 @@
   <ItemGroup>
     <Compile Include="Camera\Camera.cs" />
     <Compile Include="Floor.cs" />
-    <Compile Include="Camera\CameraInputController.cs" />
+    <Compile Include="Camera\GameLogicInputController.cs" />
     <Compile Include="HUDPuzzleBobble.cs" />
     <Compile Include="menu\GameMenu.cs" />
     <Compile Include="menu\LookAndFeelManager.cs" />

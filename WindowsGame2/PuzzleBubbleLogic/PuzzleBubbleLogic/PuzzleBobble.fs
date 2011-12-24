@@ -8,6 +8,7 @@ open Microsoft.CSharp
 //open WindowsGame2
 open PuzzleBobbleInputHandling
 
+
 // ----------------------- SOME COSTANTS ------------------------------------k
 let ball_scale : Vector3<m> = {X = 1.0f<m> ; Y = 1.0f<m> ; Z = 1.0f<m>}
 let ball_default_vel : Vector3<m/s> = Vector3.Zero
@@ -205,7 +206,7 @@ let InitLevelStatus() : LevelStatus =
      ElapsedTime = Variable(fun () -> 0.0f<s>)
      Score = variable(0)
      AvailableColors =  Variable(fun () -> Map.empty)
-     TopScores = Variable(fun () -> [ {PlayerName = "marco" ; PlayerScore = 10} ; {PlayerName = "foobar" ; PlayerScore = 100}])
+     TopScores = Variable(fun () -> List.empty) //[ {PlayerName = "marco" ; PlayerScore = 10} ; {PlayerName = "foobar" ; PlayerScore = 100}])
      Status = variable(GameStatus.Ready)
     }
 
@@ -437,10 +438,13 @@ let GetSameColorNeighs(grid : Option<Ball> [,], row : int , col : int, color : M
 let AvailableColorLis(map : Map<uint32,ColorCounter>) = //: List<Microsoft.Xna.Framework.Color>  = 
      map |> Seq.map (fun _ col -> col.Color) |> Seq.toList
 
-
+let PlaySound(game_state: GameState, e:Sound.PuzzleBobbleSoundManager.SoundsEvent) = 
+    if (!game_state.SoundOn) then
+        do Sound.PuzzleBobbleSoundManager.playSound(e);
 //dock a ball inside the grid, depending on its position
 let DockBall (game_state: GameState, grid: Option<Ball> [,] , ball : Ball) : List<FallingBall> = 
    
+    do PlaySound(game_state, Sound.PuzzleBobbleSoundManager.SoundsEvent.BALL_DOCKED)
     let deletedList : ref<List<FallingBall>> = ref<List<FallingBall>> List.empty
     
     let row , col = CoordinateToGrid(!game_state.GridSteps, ball.center)
@@ -462,7 +466,9 @@ let DockBall (game_state: GameState, grid: Option<Ball> [,] , ball : Ball) : Lis
                     VisitGridExcluding (grid, 0, col , l) 
                 deletedList.contents <- List.concat [ DeleteUnvisitedGridBalls(grid)  ; !game_state.FallingBalls]
                 GridBallsSetUnvisited(!game_state.Grid)
+                Sound.PuzzleBobbleSoundManager.playSound(Sound.PuzzleBobbleSoundManager.SoundsEvent.BALL_EXPLOSION)
             UpdateScore(l.Length, game_state)
+            
     deletedList.contents 
 
 let ApplyVelocityToVector (p:Vector3<m> , v: Vector3<m/s> ,dt : float32<s> ) : Vector3<m> =
@@ -633,6 +639,8 @@ let CheckForCollision (b : ClimbingBall) : bool =
     found
 
 
+           
+
 let update_state(dt:float32<s>) =
  //   Console.WriteLine("update_state")
     game_state.LevelStatus.TopScores := !game_state.LevelStatus.TopScores
@@ -662,15 +670,13 @@ let update_state(dt:float32<s>) =
     game_state.LevelStatus.Status := //!game_state.LevelStatus.Status
         
         if (!game_state.LevelStatus.Status) = GameStatus.Playing && AvailableColorMap(!game_state.Grid).IsEmpty then
-            game_state.LevelStatus.TopScores := {PlayerName = "foobardfsfds"; PlayerScore = 14} :: !game_state.LevelStatus.TopScores//[ List.sortWith CompareScores ({PlayerName = "foobardfsfds"; PlayerScore = 14} :: !game_state.LevelStatus.TopScores) ]
-            //Console.WriteLine("win new score length " + game_state.LevelStatus.TopScores.Value.Length.ToString())
-        //    Console.WriteLine("available colors : " + (!game_state.LevelStatus.AvailableColors).Count.ToString())
-            Sound.PuzzleBobbleSoundManager.playSound(Sound.PuzzleBobbleSoundManager.SoundsEvent.WIN);
+            game_state.LevelStatus.TopScores := {PlayerName = DateTime.Today.ToString(); PlayerScore = !game_state.LevelStatus.Score} :: !game_state.LevelStatus.TopScores//[ List.sortWith CompareScores ({PlayerName = "foobardfsfds"; PlayerScore = 14} :: !game_state.LevelStatus.TopScores) ]
+            PlaySound(game_state, Sound.PuzzleBobbleSoundManager.SoundsEvent.WIN);
             GameStatus.Win
-        else 
+        else
+            do game_state.LevelStatus.TopScores := !game_state.LevelStatus.TopScores 
+             
             (!game_state.LevelStatus.Status) 
-            
-                                                               
     game_state.GridSteps := !game_state.GridSteps
     game_state.ReadyBall := !game_state.ReadyBall
     game_state.Arrow.angle := 

@@ -195,7 +195,7 @@ namespace WindowsGame2
 
         //game.Services.AddService(typeof(ICameraActions), new InputController(this.game));
         // this.game.Services.AddService(typeof(ICameraActions), );
-        CameraInputController inputController = new CameraInputController(this.game);
+        GameLogicInputController inputController = new GameLogicInputController(this.game);
         InputManager inputManager = new InputManager(game);
         game.Components.Add(inputManager);
 
