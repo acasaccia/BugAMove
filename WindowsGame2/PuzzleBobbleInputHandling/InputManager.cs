@@ -65,7 +65,9 @@ namespace PuzzleBobbleInputHandling
             var state = Keyboard.GetState();
             if (state != null)
             {
+               
 
+                //
                 inputState.ArrowMovedLeft = state.IsKeyDown(Keys.Left);
                 inputState.ArrowMovedRight = state.IsKeyDown(Keys.Right);
                 inputState.BallShoot = state.IsKeyDown(Keys.Space);

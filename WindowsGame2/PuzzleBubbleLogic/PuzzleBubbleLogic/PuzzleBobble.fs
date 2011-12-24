@@ -17,8 +17,7 @@ let ball_default_acc : Vector3<m/s^2> = Vector3.Zero
 let FallingBallDefaultWeight = 1.0f<kg>
 let BallRadius : float32<m> = 0.2f<m>
 let BallDiameter : float32<m> = BallRadius * 2.0f
-let ClimbingBallDefaultVelocity : Vector3<m/s> = {X = 2.5f<m/s> ; Y = 2.5f<m/s> ; Z = 0.0f<m/s>}
-
+let ClimbingBallDefaultVelocity : float32<m/s> = 4.0f<m/s>
 let G: float32<m/s^2>= 9.81f<m/s^2>
 let BallsPerLine  =  9
 let LineNumber : int = 2
@@ -532,8 +531,8 @@ let  BallShoot(readyBall : Ball, angle:float32) : ClimbingBall=
     radius = readyBall.radius;
     velocity = 
         {      
-        X = (angle |> float32 |> cos) * ClimbingBallDefaultVelocity.X ;
-        Y = (angle |> float32 |> sin )* ClimbingBallDefaultVelocity.Y;
+        X = (angle |> float32 |> cos) * ClimbingBallDefaultVelocity;// ClimbingBallDefaultVelocity.X ;
+        Y = (angle |> float32 |> sin )* ClimbingBallDefaultVelocity;//ClimbingBallDefaultVelocity.Y;
         Z = 0.0f<m/s>
         }
     color = readyBall.color

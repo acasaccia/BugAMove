@@ -49,6 +49,8 @@ namespace WindowsGame2.menu
         protected Color color;
         public void OnActionPeformed() 
         {
+  ///////
+
             if (actionPerformed != null)
                 this.actionPerformed();
         }
