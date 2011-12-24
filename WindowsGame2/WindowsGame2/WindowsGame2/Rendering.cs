@@ -88,7 +88,58 @@ namespace WindowsGame2
           GraphicsDevice.Viewport.AspectRatio, 0.01f, 10000.0f);
     }
 
+    public BoundingBox CalculateBoundingBox(Model m_model)
+    {
 
+        // Create variables to hold min and max xyz values for the model. Initialise them to extremes
+        Vector3 modelMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+        Vector3 modelMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        Matrix[] m_transforms = new Matrix[m_model.Bones.Count];
+        foreach (ModelMesh mesh in m_model.Meshes)
+        {
+            //Create variables to hold min and max xyz values for the mesh. Initialise them to extremes
+            Vector3 meshMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            Vector3 meshMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+
+            // There may be multiple parts in a mesh (different materials etc.) so loop through each
+            foreach (ModelMeshPart part in mesh.MeshParts)
+            {
+                // The stride is how big, in bytes, one vertex is in the vertex buffer
+                // We have to use this as we do not know the make up of the vertex
+                int stride = part.VertexBuffer.VertexDeclaration.VertexStride;
+
+                byte[] vertexData = new byte[stride * part.NumVertices];
+                part.VertexBuffer.GetData(part.VertexOffset * stride, vertexData, 0, part.NumVertices, 1); // fixed 13/4/11
+
+                // Find minimum and maximum xyz values for this mesh part
+                // We know the position will always be the first 3 float values of the vertex data
+                Vector3 vertPosition = new Vector3();
+                for (int ndx = 0; ndx < vertexData.Length; ndx += stride)
+                {
+                    vertPosition.X = BitConverter.ToSingle(vertexData, ndx);
+                    vertPosition.Y = BitConverter.ToSingle(vertexData, ndx + sizeof(float));
+                    vertPosition.Z = BitConverter.ToSingle(vertexData, ndx + sizeof(float) * 2);
+
+                    // update our running values from this vertex
+                    meshMin = Vector3.Min(meshMin, vertPosition);
+                    meshMax = Vector3.Max(meshMax, vertPosition);
+                }
+            }
+
+            // transform by mesh bone transforms
+            meshMin = Vector3.Transform(meshMin, m_transforms[mesh.ParentBone.Index]);
+            meshMax = Vector3.Transform(meshMax, m_transforms[mesh.ParentBone.Index]);
+
+            // Expand model extents by the ones from this mesh
+            modelMin = Vector3.Min(modelMin, meshMin);
+            modelMax = Vector3.Max(modelMax, meshMax);
+        }
+
+
+        // Create and return the model bounding box
+        return new BoundingBox(modelMin, modelMax);
+
+    }
     private void DrawArrow(float rotation) {
         Matrix[] transforms = new Matrix[this.arrow.Bones.Count];
         float aspectRatio = GraphicsDevice.Viewport.AspectRatio;
@@ -137,7 +188,7 @@ namespace WindowsGame2
         spriteBatch.DrawString(this.font, message,messagePosition , Color.Black, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
         spriteBatch.End();
     }
-    private void DrawModel(Model m, float scale, Vector3 pos, Vector3 rotations, Color col)
+    private void DrawModel(Model m, float scale, Vector3 pos, Vector3 rotations, Nullable<Color> col)
     {
         Matrix[] transforms = new Matrix[m.Bones.Count];
         float aspectRatio = GraphicsDevice.Viewport.AspectRatio;
@@ -158,7 +209,9 @@ namespace WindowsGame2
             {
                 //new stuff
               //  mesh.BoundingSphere.
-                effect.EmissiveColor = col.ToVector3();
+                if (col.HasValue)
+                    effect.EmissiveColor = col.Value.ToVector3();
+                
                 effect.EnableDefaultLighting();
                 effect.CurrentTechnique.Passes[0].Apply();
                 effect.View = this.camera.viewMatrix;
@@ -173,8 +226,90 @@ namespace WindowsGame2
             mesh.Draw();
         }
     }
+    public BoundingBox BoundingBoxFromVertex(Model m_model)
+    {
 
-    Model pillar;
+        // Create variables to hold min and max xyz values for the model. Initialise them to extremes
+        Vector3 modelMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+        Vector3 modelMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        Matrix[] m_transforms = new Matrix[m_model.Bones.Count];
+        m_model.CopyAbsoluteBoneTransformsTo(m_transforms);
+        foreach (ModelMesh mesh in m_model.Meshes)
+        {
+            //Create variables to hold min and max xyz values for the mesh. Initialise them to extremes
+            Vector3 meshMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            Vector3 meshMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+
+            // There may be multiple parts in a mesh (different materials etc.) so loop through each
+            foreach (ModelMeshPart part in mesh.MeshParts)
+            {
+                // The stride is how big, in bytes, one vertex is in the vertex buffer
+                // We have to use this as we do not know the make up of the vertex
+                int stride = part.VertexBuffer.VertexDeclaration.VertexStride;
+
+                byte[] vertexData = new byte[stride * part.NumVertices];
+                part.VertexBuffer.GetData(part.VertexOffset * stride, vertexData, 0, part.NumVertices, 1); // fixed 13/4/11
+
+                // Find minimum and maximum xyz values for this mesh part
+                // We know the position will always be the first 3 float values of the vertex data
+                Vector3 vertPosition = new Vector3();
+                for (int ndx = 0; ndx < vertexData.Length; ndx += stride)
+                {
+                    vertPosition.X = BitConverter.ToSingle(vertexData, ndx);
+                    vertPosition.Y = BitConverter.ToSingle(vertexData, ndx + sizeof(float));
+                    vertPosition.Z = BitConverter.ToSingle(vertexData, ndx + sizeof(float) * 2);
+
+                    // update our running values from this vertex
+                    meshMin = Vector3.Min(meshMin, vertPosition);
+                    meshMax = Vector3.Max(meshMax, vertPosition);
+                }
+            }
+
+            // transform by mesh bone transforms
+            meshMin = Vector3.Transform(meshMin, m_transforms[mesh.ParentBone.Index]);
+            meshMax = Vector3.Transform(meshMax, m_transforms[mesh.ParentBone.Index]);
+
+            // Expand model extents by the ones from this mesh
+            modelMin = Vector3.Min(modelMin, meshMin);
+            modelMax = Vector3.Max(modelMax, meshMax);
+        }
+
+
+        // Create and return the model bounding box
+        BoundingBox b = new BoundingBox(modelMin, modelMax);
+        return b;
+    }
+    protected BoundingSphere MergedBoundingSphere(Model model)
+    {
+        BoundingSphere mergedSphere = new BoundingSphere();
+        BoundingSphere[] boundingSpheres;
+        int index = 0;
+        int meshCount = model.Meshes.Count;
+
+        boundingSpheres = new BoundingSphere[meshCount];
+        foreach (ModelMesh mesh in model.Meshes)
+        {
+            boundingSpheres[index++] = mesh.BoundingSphere;
+        }
+
+        mergedSphere = boundingSpheres[0];
+        if ((model.Meshes.Count) > 1)
+        {
+            index = 1;
+            do
+            {
+                mergedSphere = BoundingSphere.CreateMerged(mergedSphere,
+                    boundingSpheres[index]);
+                index++;
+            } while (index < model.Meshes.Count);
+        }
+        mergedSphere.Center.Y = 0;
+        return mergedSphere;
+    }
+    Model Box;
+    //BoundingBox BoxBounds;
+    BoundingSphere BoxMergedBoundingSphere;
+    BoundingBox BoxBoundingBox;
     //pillarBox;
     protected override void LoadContent()
     {
@@ -182,55 +317,15 @@ namespace WindowsGame2
       ballMesh = Game.Content.Load<Model>("sphere");
       arrow = Game.Content.Load<Model>("balestra");
       this.font = game.Content.Load<SpriteFont>("BigFont");
-      pillar = Game.Content.Load<Model>("Crate1");
-      //pillar = Game.Content.Load<Model>("MysteryBlock");
-      #if FOO       
-      rendering_data.ball = Game.Content.Load<Texture2D>("ball_icon");
-      rendering_data.MaxX = GraphicsDevice.Viewport.Width - rendering_data.ball.Width;
-      rendering_data.MaxY = GraphicsDevice.Viewport.Height - rendering_data.ball.Height;
-        
-        //my stuff
-      this.worldData.background = Game.Content.Load<Texture2D>("background");
-      this.worldData.arrowTexture = Game.Content.Load<Texture2D>("arrow");
-      this.worldData.ballStandardTexture = Game.Content.Load<Texture2D>("ball_white");
+      Box = Game.Content.Load<Model>("Crate1");
 
-      
-      //this.colored_effect = new BasicEffect(GraphicsDevice)
+      //this.BoxMergedBoundingSphere = new BoundingSphere();
+      //foreach (var mesh in Box.Meshes)
       //{
-      //    VertexColorEnabled = true
-      //    Texture = //
-      // //   text
-      //};
-
-        /*
-         loading texture for 2D
-         */
-      this.worldData.square = new SquareTextured(Game.Content.Load<Texture2D>("fractal"));
-    
-      //this.basic_effect.View = this.camera.viewMatrix;
-      ballMesh = Game.Content.Load<Model>("sphere");
-     // houseModel = Game.Content.Load<Model>("maison");
-
-      this.emptyEffect = new BasicEffect(GraphicsDevice);
-      this.emptyEffect.TextureEnabled = false;
-      this.basic_effect = new BasicEffect(GraphicsDevice);
-      //basic_effect.World = Matrix.Identity;
-      //basic_effect.View = Matrix.Identity;
-      //basic_effect.Projection = Matrix.Identity;
-
-
-      vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColorTexture), this.worldData.square.vertices.Length, BufferUsage.WriteOnly);
-      vertexBuffer.SetData(this.worldData.square.vertices); // TODO: put this elsewhere..SetData should be called only once
-      indexBuf = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, this.worldData.square.index.Length, BufferUsage.WriteOnly);
-      indexBuf.SetData(this.worldData.square.index);
-
-      this.basic_effect.Texture = this.worldData.square.texture;
-      this.basic_effect.TextureEnabled = true;
-
-      this.ground = Game.Content.Load<Model>("newspaper");
-      this.building = Game.Content.Load<Model>("tower bridge");
-#endif
-        //CopyToBuffer();
+      //    this.BoxMergedBoundingSphere  = BoundingSphere.CreateMerged(this.BoxMergedBoundingSphere, mesh.BoundingSphere );
+      //}
+      //this.BoxMergedBoundingSphere = this.MergedBoundingSphere(Box);
+      this.BoxBoundingBox = this.BoundingBoxFromVertex(Box);
       base.LoadContent();
     }
 
@@ -298,14 +393,27 @@ namespace WindowsGame2
 
         this.DrawArrow(arr.angle.Value);
 
-       // Boupillar.Meshes[0].BoundingSphere
-        float size = pillar.Meshes[0].BoundingSphere.Radius;
-        Vector3 ce = pillar.Meshes[0].BoundingSphere.Center;
-        for (int i = 0; i < 8; i++)
+       
+        float XSIZE = BoxBoundingBox.Max.X - BoxBoundingBox.Min.X;
+        float YSIZE = BoxBoundingBox.Max.Y - BoxBoundingBox.Min.Y;
+        float ZSIZE = BoxBoundingBox.Max.Z - BoxBoundingBox.Min.Z;
+        for (int i = 0; i < 4; i++)
         {
-            this.DrawModel(pillar, 1.0f, new Vector3(-size + ce.X, +size - ce.Y + (size * 2 * i), -size), Vector3.Zero, c);
-            this.DrawModel(pillar, 1.0f, new Vector3(PuzzleBobble.BoxDimension.X +size - ce.X, +size - ce.Y + (size * 2 * i), -size), Vector3.Zero, c);
+            this.DrawModel(Box, 1.0f, new Vector3(-XSIZE /2.0f  , YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
+            this.DrawModel(Box, 1.0f, new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X, YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
+          
         }
+
+        //pretty works 
+        //for (int i = 0; i < 8; i++)
+        //{
+        //    this.DrawModel(Box, 1.0f, new Vector3(-size + ce.X, +size - ce.Y + (size * 2 * i), -size), Vector3.Zero, null);
+        //    this.DrawModel(Box, 1.0f, new Vector3(PuzzleBobble.BoxDimension.X + size - ce.X, +size - ce.Y + (size * 2 * i), -size), Vector3.Zero, null);
+        //}
+   //     Vector3 roofSize = new Vector3(size + ce.X, PuzzleBobble.BoxDimension.Y - ce.Y - (PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter), -size);
+   //     float roofScale = roofSize.X / PuzzleBobble.BallDiameter;
+        //this.DrawModel(Box, roofScale, roofSize, Vector3.Zero, Color.Red);
+        
         if (PuzzleBobble.game_state.LevelStatus.Status.Value == PuzzleBobble.GameStatus.Ready)
         {
             this.DrawMessage("Level Ready : Press Enter to start Game");

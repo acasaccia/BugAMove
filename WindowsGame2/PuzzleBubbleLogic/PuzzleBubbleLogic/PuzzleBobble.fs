@@ -26,7 +26,9 @@ let MaxLineNumber : int = 13;
 let x  = MaxLineNumber - 1; 
 let GridStepDelta : Vector3<m> = {X = 0.0f<m>; Y = BallDiameter; Z= 0.0f<m>}
 let BallClusterSize = 3
+
 let BoxDimension : Vector3<m>= { X=  float32 BallsPerLine * BallDiameter; Y= float32 MaxLineNumber * BallDiameter; Z = 3.0f<m>}
+let BoxTopMostLeftFrontCorner : Vector3<m> = {X = 0.0f<m>  ; Y = BoxDimension.Y; Z = 0.0f<m>}
 let FloorMiddlePoint : Vector3<m> = { X =  BoxDimension.X / 2.0f  ; Y = 0.0f<m>; Z = 0.0f<m>}
 let BallMaxDistance = 10.0f<m>
 let BallCenterMinY = 2.0f * BallDiameter
@@ -472,7 +474,7 @@ let InvertVelocityX (v:Vector3<m/s>) : Vector3<m/s> =
 let MoveBall(b: ClimbingBall, dt: float32<s> ) : ClimbingBall  =
      
     let newBall = {b with center = b.center + b.velocity * dt}
-    if (newBall.center.X + newBall.radius > BoxDimension.X || newBall.center.X < 0.0f<m>) then
+    if (newBall.center.X + newBall.radius > BoxDimension.X || newBall.center.X - newBall.radius < 0.0f<m>) then
         {newBall with velocity = InvertVelocityX (b.velocity)}
     else 
         newBall
@@ -646,7 +648,7 @@ let update_state(dt:float32<s>) =
             (Console.WriteLine("Lost"))
             game_state.LevelStatus.ElapsedTime := !game_state.LevelStatus.ElapsedTime                
         | GameStatus.Ready  ->
-            Console.WriteLine("Ready")
+           // Console.WriteLine("Ready")
             ()// (Console.WriteLine("Ready"))
             game_state.LevelStatus.ElapsedTime := !game_state.LevelStatus.ElapsedTime
         | _ -> ()
@@ -738,6 +740,7 @@ let private main () =
                 if (input.BallShoot) then
                     
                     if (!game_state.SoundOn) then
+                        Console.WriteLine("SoundOn")
                         Sound.PuzzleBobbleSoundManager.playSound(Sound.PuzzleBobbleSoundManager.SoundsEvent.BALL_SHOOT);
                     game_state.ClimbingBalls :=  BallShoot(!game_state.ReadyBall, !game_state.Arrow.angle)  :: !game_state.ClimbingBalls
                     let newb =  RandomBallFromRemainingColors(AvailableColorMap(!game_state.Grid))//new_random_ball (!game_state.LevelStatus.AvailableColors)
