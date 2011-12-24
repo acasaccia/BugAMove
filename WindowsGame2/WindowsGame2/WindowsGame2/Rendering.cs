@@ -188,7 +188,7 @@ namespace WindowsGame2
         spriteBatch.DrawString(this.font, message,messagePosition , Color.Black, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
         spriteBatch.End();
     }
-    private void DrawModel(Model m, float scale, Vector3 pos, Vector3 rotations, Nullable<Color> col)
+    private void DrawModel(Model m, Vector3 scale, Vector3 pos, Vector3 rotations, Nullable<Color> col)
     {
         Matrix[] transforms = new Matrix[m.Bones.Count];
         float aspectRatio = GraphicsDevice.Viewport.AspectRatio;
@@ -200,6 +200,7 @@ namespace WindowsGame2
             aspectRatio, 0.01f, 10000.0f);
        
        Matrix scaleMatrix = Matrix.CreateScale(scale);
+      //  Matrix.
        Matrix translationMatrix = Matrix.CreateTranslation(pos);
        Matrix rotationMatrix = Matrix.CreateFromYawPitchRoll( rotations.Y, rotations.X, rotations.Z);
         foreach (ModelMesh mesh in m.Meshes)
@@ -357,7 +358,7 @@ namespace WindowsGame2
                     Vector3 pos = PuzzleBobble.game_state.Grid.Value[i, j].Value.center.toXNAVector;
                     float scale = PuzzleBobble.game_state.Grid.Value[i, j].Value.radius;
                     Color col = PuzzleBobble.game_state.Grid.Value[i, j].Value.color;
-                    this.DrawModel(this.ballMesh, scale, pos, Vector3.Zero, col);
+                    this.DrawModel(this.ballMesh, new Vector3 (scale,scale,scale), pos, Vector3.Zero, col);
 
                     //       Console.WriteLine("ball_docked " + i + " " + j + " pos " + pos);
                 }
@@ -369,7 +370,7 @@ namespace WindowsGame2
             Vector3 pos = climbingBall.center.toXNAVector;
             float scale = climbingBall.radius;
             Color col = climbingBall.color;
-            this.DrawModel(this.ballMesh, scale, pos, Vector3.Zero, col);
+            this.DrawModel(this.ballMesh, new Vector3(scale, scale, scale), pos, Vector3.Zero, col);
        
         }
         foreach (var fallingBall in PuzzleBobble.game_state.FallingBalls.Value)
@@ -378,7 +379,7 @@ namespace WindowsGame2
             Vector3 pos = fallingBall.center.toXNAVector;
             float scale = fallingBall.radius;
             Color col = fallingBall.color;
-            this.DrawModel(this.ballMesh, scale, pos, Vector3.Zero, col);
+            this.DrawModel(this.ballMesh, new Vector3(scale, scale, scale), pos, Vector3.Zero, col);
 
         }
        
@@ -387,7 +388,7 @@ namespace WindowsGame2
         Vector3 p = readyBall.center.toXNAVector;
         float s = readyBall.radius;
         Color c = readyBall.color;
-        this.DrawModel(this.ballMesh, s, p, Vector3.Zero, c);
+        this.DrawModel(this.ballMesh, new Vector3(s, s, s), p, Vector3.Zero, c);
 
         PuzzleBobble.Arrow arr = PuzzleBobble.game_state.Arrow;
 
@@ -399,11 +400,13 @@ namespace WindowsGame2
         float ZSIZE = BoxBoundingBox.Max.Z - BoxBoundingBox.Min.Z;
         for (int i = 0; i < 4; i++)
         {
-            this.DrawModel(Box, 1.0f, new Vector3(-XSIZE /2.0f  , YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
-            this.DrawModel(Box, 1.0f, new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X, YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
+            this.DrawModel(Box, Vector3.One, new Vector3(-XSIZE /2.0f  , YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
+            this.DrawModel(Box, Vector3.One, new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X, YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
           
         }
-
+        float roofScaleX = PuzzleBobble.BoxDimension.X / XSIZE;
+        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 1.0f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y + YSIZE - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, 0.0f), Vector3.Zero, null);
+        
         //pretty works 
         //for (int i = 0; i < 8; i++)
         //{

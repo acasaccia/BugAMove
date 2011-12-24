@@ -10,6 +10,7 @@ namespace WindowsGame2
  //   public delegate void CameraEvent(object sender, CameraEventArg args);
       
    
+
     public interface ICameraInputService
     {
         event Action<Camera.CameraTransformations, float > changedCamera;

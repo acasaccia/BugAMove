@@ -45,7 +45,8 @@ namespace WindowsGame2
             this.look = Vector3.Forward;
 
             this.updateViewMatrix();
-         //   this.up = Vector3.Up;
+
+         //  this.up = Vector3.Up;
     
         }
         //public void roll() {
