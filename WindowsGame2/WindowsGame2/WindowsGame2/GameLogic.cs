@@ -64,7 +64,7 @@ namespace WindowsGame2
 
     public bool running;
     private PuzzleBobbleSoundManager soundManager;
-    private ICameraInputService cameraInput; //TODO:move this into rendering component
+    private IGameLogicInputService cameraInput; //TODO:move this into rendering component
     private Game1 game;
     private GameMenu gameMenu;
 
@@ -90,7 +90,7 @@ namespace WindowsGame2
             Game.Components.Add(this.gameMenu);
             InputManager input = Game.Services.GetService(typeof(InputManager)) as InputManager;
             input.pause();
-            Game.Services.RemoveService(typeof(ICameraInputService));
+            Game.Services.RemoveService(typeof(IGameLogicInputService));
             Game.Components.Remove((GameComponent)this.cameraInput);
         }
         else
@@ -128,7 +128,7 @@ namespace WindowsGame2
         input.start();
 
         Game.Components.Add((GameComponent)this.cameraInput);
-        Game.Services.AddService(typeof(ICameraInputService), this.cameraInput);
+        Game.Services.AddService(typeof(IGameLogicInputService), this.cameraInput);
        
         this.start();
     }
@@ -172,15 +172,15 @@ namespace WindowsGame2
         bool useFile = false;
         this.running = false;
         this.soundManager = new PuzzleBobbleSoundManager(this.game);
-        CameraInputController inputController = new CameraInputController(this.game);
+        GameLogicInputController inputController = new GameLogicInputController(this.game);
         game.Components.Add(inputController);
 
     }
 
     protected override void Dispose(bool disposing)
     {
-        Game.Components.Remove((CameraInputController)this.cameraInput);
-        ((CameraInputController)this.cameraInput).Dispose();
+        Game.Components.Remove((GameLogicInputController)this.cameraInput);
+        ((GameLogicInputController)this.cameraInput).Dispose();
      // Game.Services.RemoveService(typeof(Ball));
      // Game.Services.RemoveService(typeof(Arrow));
         Game.Components.Remove(this);
@@ -200,12 +200,12 @@ namespace WindowsGame2
     {
         Console.WriteLine("GameLogic: Initialize");
 
-      this.cameraInput = Game.Services.GetService(typeof(ICameraInputService)) as ICameraInputService;
+      this.cameraInput = Game.Services.GetService(typeof(IGameLogicInputService)) as IGameLogicInputService;
       //if (cameraInput != null)
       //{
       if (this.cameraInput == null) {
-          this.cameraInput = new CameraInputController(this.game);
-          Game.Components.Add((CameraInputController)this.cameraInput);
+          this.cameraInput = new GameLogicInputController(this.game);
+          Game.Components.Add((GameLogicInputController)this.cameraInput);
       }
       cameraInput.changedCamera += this.OnCameraMoved;//(Camera.CameraTransformations t, float dt) => this.OnCameraMoved(t, dt);
       cameraInput.gamePaused += this.OnGamePaused;
@@ -248,6 +248,7 @@ namespace WindowsGame2
        // Console.WriteLine("GameLogic: Update");
         if (this.running)
         {
+            
             var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             switch (PuzzleBobble.game_state.LevelStatus.Status.Value)
             {
@@ -268,10 +269,10 @@ namespace WindowsGame2
                     {
                        
                         //System.Threading.Thread.Sleep(5000);
-                        //PuzzleBobble.update_state(dt);
-                        //PuzzleBobble.update_script();
+                        PuzzleBobble.update_state(dt);
+                        PuzzleBobble.update_script();
 
-                        //Casanova.commit_variable_updates();
+                        Casanova.commit_variable_updates();
                         System.Threading.Thread.Sleep(5000);
                         this.pause();
                         this.OnBackToMenu();

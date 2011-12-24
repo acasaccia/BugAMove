@@ -11,23 +11,23 @@ namespace WindowsGame2
       
    
 
-    public interface ICameraInputService
+    public interface IGameLogicInputService
     {
         event Action<Camera.CameraTransformations, float > changedCamera;
         event Action gamePaused;
         event Action gameResumed;
 
     }
-    class CameraInputController : GameComponent, ICameraInputService
+    class GameLogicInputController : GameComponent, IGameLogicInputService
     {
         public event Action<Camera.CameraTransformations, float > changedCamera;
         public event Action gamePaused;
         public event Action gameResumed;
      
         //CONSTRUCTOR
-        public CameraInputController(Game game) : base(game) {
+        public GameLogicInputController(Game game) : base(game) {
 
-            Game.Services.AddService(typeof(ICameraInputService), this);
+            Game.Services.AddService(typeof(IGameLogicInputService), this);
         }
         public override void Initialize()
         {
@@ -37,7 +37,7 @@ namespace WindowsGame2
         }
         protected override void Dispose(bool disposing)
         {
-            Game.Services.RemoveService(typeof(ICameraInputService));
+            Game.Services.RemoveService(typeof(IGameLogicInputService));
             base.Dispose(disposing);
         }
         KeyboardState prev_kb;
