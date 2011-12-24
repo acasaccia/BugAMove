@@ -118,7 +118,6 @@
     <Compile Include="Floor.cs" />
     <Compile Include="Camera\CameraInputController.cs" />
     <Compile Include="HUDPuzzleBobble.cs" />
-    <Compile Include="InputManager.cs" />
     <Compile Include="menu\GameMenu.cs" />
     <Compile Include="menu\LookAndFeelManager.cs" />
     <Compile Include="menu\MenuInputController.cs" />
