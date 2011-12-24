@@ -13,8 +13,8 @@ namespace PuzzleBobbleInputHandling.Sound
     public class PuzzleBobbleSoundManager 
     {
         private Game game;
-        public enum SoundsEvent { BALL_SHOOT, ARROW_MOVED, BALL_EXPLOSION}
-        private static SoundEffect OnBallShoot, OnArrowMoved;
+        public enum SoundsEvent { BALL_SHOOT, ARROW_MOVED, BALL_EXPLOSION, WIN}
+        private static SoundEffect OnBallShoot, OnArrowMoved,OnWin;
        // private PuzzleBobbleSoundManager() { }
         public static void playSound(SoundsEvent e) { 
             switch (e)
@@ -28,6 +28,10 @@ namespace PuzzleBobbleInputHandling.Sound
                // OnArrowMoved.Play();
                 break;
             }
+            case SoundsEvent.WIN: {
+                OnWin.Play();
+                break;
+            }
 		    default:
                 break;
 	        }
@@ -38,7 +42,7 @@ namespace PuzzleBobbleInputHandling.Sound
 
             OnBallShoot = game.Content.Load<SoundEffect>("Sounds/waterdrop24");
             OnArrowMoved = game.Content.Load<SoundEffect>("Sounds/tick");
-            
+            OnWin = game.Content.Load<SoundEffect>("Sounds/youwin16");
         }
     }
 }

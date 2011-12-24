@@ -665,6 +665,7 @@ let update_state(dt:float32<s>) =
             game_state.LevelStatus.TopScores := {PlayerName = "foobardfsfds"; PlayerScore = 14} :: !game_state.LevelStatus.TopScores//[ List.sortWith CompareScores ({PlayerName = "foobardfsfds"; PlayerScore = 14} :: !game_state.LevelStatus.TopScores) ]
             //Console.WriteLine("win new score length " + game_state.LevelStatus.TopScores.Value.Length.ToString())
         //    Console.WriteLine("available colors : " + (!game_state.LevelStatus.AvailableColors).Count.ToString())
+            Sound.PuzzleBobbleSoundManager.playSound(Sound.PuzzleBobbleSoundManager.SoundsEvent.WIN);
             GameStatus.Win
         else 
             (!game_state.LevelStatus.Status) 

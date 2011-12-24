@@ -151,13 +151,13 @@ namespace WindowsGame2
        // Vector3 distance = PuzzleBobble.game_state.ReadyBall.Value.center.toXNAVector - cube.BoundingSphere.Center;
         //Vector3 distance = PuzzleBobble.game_state.ReadyBall.Value.center.toXNAVector;
         Vector3 distance = PuzzleBobble.game_state.ReadyBall.Value.center.toXNAVector;
-        distance.Z -= 1.5f;
+        distance.Z -= 1.3f;
         //Console.WriteLine("Bounding sphere : " + cube.BoundingSphere.Center + " rad " + cube.BoundingSphere.Radius);
         Matrix rot = Matrix.CreateRotationZ(rotation );
         Matrix t = Matrix.CreateTranslation(distance);
         for (int i = 0 ; i < this.arrow.Meshes.Count ; i++){
             ModelMesh mesh = this.arrow.Meshes[i];
-            if (i == 3 )
+            if (i == 3 || i ==4)
                 continue;
 
             
