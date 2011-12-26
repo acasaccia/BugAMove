@@ -20,9 +20,9 @@ namespace WindowsGame2
             this.game = game;
             
 
-            this.timeColor = Color.Black;
-            this.statsTitleColor = Color.Black;
-            this.statsColor = Color.Red;
+            this.timeColor = Color.White;
+            this.statsTitleColor = Color.White;
+            this.statsColor = Color.White;
            
             this.statsPosition1UP =  new Vector2( 0.02f * this.game.graphics.PreferredBackBufferWidth, 0.02f * this.game.graphics.PreferredBackBufferHeight);
         }

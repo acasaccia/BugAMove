@@ -60,7 +60,7 @@ namespace WindowsGame2
       Game.Services.AddService(typeof(IRendering3DService), this);
       this.viewPortDimension = new Vector2(this.game.graphics.PreferredBackBufferWidth, this.game.graphics.PreferredBackBufferHeight);
 
-      this.camera = new Camera(new Vector3(1.5f, 2.4f, 5.2f));
+      this.camera = new Camera(new Vector3(1.5f, 2.6f, 5.4f));
        // this.camera.setAbsolutePosition(new Vector3(1.5f, 2.4f, 5.2f ));
         this.camera.updateViewMatrix();
 //        {X:1.519999 Y:2.419998 Z:5.259996}
