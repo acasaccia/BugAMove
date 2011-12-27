@@ -337,7 +337,7 @@ namespace WindowsGame2
     protected override void Dispose(bool disposing)
     {
    //   Game.Services.RemoveService(typeof(RenderingData));
-      Game.Services.RemoveService(typeof(WorldData2D));
+   //   Game.Services.RemoveService(typeof(WorldData2D));
       base.Dispose(disposing);
     }
 

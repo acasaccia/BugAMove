@@ -115,7 +115,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera\Camera.cs" />
-    <Compile Include="Floor.cs" />
     <Compile Include="Camera\GameLogicInputController.cs" />
     <Compile Include="HUDPuzzleBobble.cs" />
     <Compile Include="menu\GameMenu.cs" />
@@ -128,9 +127,6 @@
     <Compile Include="Rendere2D.cs" />
     <Compile Include="Sound\MenuSoundManager.cs" />
     <Compile Include="Sound\PuzzleBobbleSoundManagerold.cs" />
-    <Compile Include="SquareTextured.cs" />
-    <Compile Include="TreeNode.cs" />
-    <Compile Include="WorldData2D.cs" />
     <Compile Include="GameLogic.cs" />
     <Compile Include="GameWorld.cs" />
     <Compile Include="menu\Menu.cs" />
@@ -140,6 +136,7 @@
     <Compile Include="Rendering.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CreditAttribution.txt" />
     <Content Include="Windows.csproj" />
   </ItemGroup>
   <ItemGroup>

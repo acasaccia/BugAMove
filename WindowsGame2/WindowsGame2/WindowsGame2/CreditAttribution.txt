@@ -1,0 +1,18 @@
+﻿Those are the sounds that I used during the development. Some are no longer used, anyway here's the credits:
+
+Downloaded on December 24th, 2011
+     S: Glug1.wav by acclivity -- http://www.freesound.org/people/acclivity/sounds/19990/
+     S: FingerPlop4.wav by acclivity -- http://www.freesound.org/people/acclivity/sounds/25880/
+     S: heavy_crate_smash.wav by Srehpog -- http://www.freesound.org/people/Srehpog/sounds/31625/
+     S: Splattt.mp3 by SlykMrByches -- http://www.freesound.org/people/SlykMrByches/sounds/55234/
+     S: deconstruction-set_turn-on.wav by suonho -- http://www.freesound.org/people/suonho/sounds/25259/
+     S: Chinese Traditional Ritual 1.wav by soloan -- http://www.freesound.org/people/soloan/sounds/82818/
+     S: track3.mp3 by kerri -- http://www.freesound.org/people/kerri/sounds/58810/
+     S: male voice saying YOU WIN.wav by klankbeeld -- http://www.freesound.org/people/klankbeeld/sounds/127506/
+Downloaded on December 7th, 2011
+     S: Electromechanics 4.wav by digifishmusic -- http://www.freesound.org/people/digifishmusic/sounds/42882/
+     S: waterdrop24.wav by junggle -- http://www.freesound.org/people/junggle/sounds/30341/
+     S: Beep1000.wav by acclivity -- http://www.freesound.org/people/acclivity/sounds/25882/
+     S: ding.wav by Corsica_S -- http://www.freesound.org/people/Corsica_S/sounds/91926/
+     S: water_dribble_07.wav by junggle -- http://www.freesound.org/people/junggle/sounds/27360/
+     S: wind.wav by ERH -- http://www.freesound.org/people/ERH/sounds/34338/
