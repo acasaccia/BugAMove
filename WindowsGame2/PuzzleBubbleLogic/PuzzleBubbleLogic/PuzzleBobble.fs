@@ -597,7 +597,7 @@ let setLevelStatus(s) =
     game_state.LevelStatus.ElapsedTime := !s.ElapsedTime 
     game_state.LevelStatus.Status := !s.Status
     game_state.LevelStatus.Score := !s.Score 
-    game_state.LevelStatus.TopScores := !s.TopScores
+    game_state.LevelStatus.TopScores := List.concat [!game_state.LevelStatus.TopScores ;!s.TopScores]
 
 let setGameState(newGameState : GameState) = 
     game_state.Arrow.angle := !newGameState.Arrow.angle

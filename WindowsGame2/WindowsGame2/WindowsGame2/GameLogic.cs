@@ -55,7 +55,7 @@ namespace WindowsGame2
 
           foreach (var score_entry in PuzzleBobble.game_state.LevelStatus.TopScores.Value)
 	      {
-              Console.WriteLine("added score for " + score_entry.PlayerName);
+           //   Console.WriteLine("added score for " + score_entry.PlayerName);
               scores.Add(new ScoreEntry(score_entry.PlayerName, score_entry.PlayerScore));
 	      }
           return scores;
@@ -82,7 +82,7 @@ namespace WindowsGame2
     }
     public void OnGamePaused() 
     { 
-        Console.WriteLine("GameLogic OnGamePause");
+       // Console.WriteLine("GameLogic OnGamePause");
         if (this.running)
         {
             this.pause();
@@ -98,7 +98,7 @@ namespace WindowsGame2
     }
 
     public void OnBackToMenu() { 
-        Console.WriteLine("GameLogic OnBackToMenu");
+     //   Console.WriteLine("GameLogic OnBackToMenu");
 
      //   Game.Components.Remove(this);
         Game.Components.Remove(this.gameMenu);
@@ -120,7 +120,7 @@ namespace WindowsGame2
     }
     public void OnResumeGame() 
     {
-        Console.WriteLine("GameLogic OnResumeGame");
+   //     Console.WriteLine("GameLogic OnResumeGame");
         Game.Components.Remove(this.gameMenu);
         Game.Services.RemoveService(typeof(IGameMenuService));
         this.gameMenu.Dispose();
@@ -134,13 +134,14 @@ namespace WindowsGame2
     }
 
     public void OnSaveGame() {
-        Console.WriteLine("GameLogic OnSaveGame");
+     //   Console.WriteLine("GameLogic OnSaveGame");
         using (var stream = File.Open("game_status.sav", FileMode.Create))
         {
             var binary_formatter = new BinaryFormatter();
           //  Casanova.commit_variable_updates();
             binary_formatter.Serialize(stream, PuzzleBobble.game_state );
-            Console.WriteLine("SAVE ESEGUITO at gametime : " + PuzzleBobble.game_state.LevelStatus.ElapsedTime.Value.ToString());
+            //Console.WriteLine("SAVE ESEGUITO at gametime : " + PuzzleBobble.game_state.LevelStatus.ElapsedTime.Value.ToString() + "score len " + 
+            //    PuzzleBobble.game_state.LevelStatus.TopScores.Value.Length);
             stream.Close();
         }
         
@@ -154,7 +155,7 @@ namespace WindowsGame2
                 PuzzleBobble.GameState state = binary_formatter.Deserialize(stream) as PuzzleBobble.GameState;
                 PuzzleBobble.load_game_state(state);
              //  Casanova.commit_variable_updates();
-                Console.WriteLine("State Loaded at gametime " + state.LevelStatus.ElapsedTime.Value.ToString());
+              //  Console.WriteLine("State Loaded at gametime " + state.LevelStatus.ElapsedTime.Value.ToString());
             }
             catch (ArgumentNullException e) {
                 Console.WriteLine(e.Message);  
@@ -198,7 +199,7 @@ namespace WindowsGame2
     
     public override void Initialize()
     {
-        Console.WriteLine("GameLogic: Initialize");
+      //      Console.WriteLine("GameLogic: Initialize");
 
       this.cameraInput = Game.Services.GetService(typeof(IGameLogicInputService)) as IGameLogicInputService;
       //if (cameraInput != null)
