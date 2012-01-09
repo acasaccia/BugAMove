@@ -28,12 +28,16 @@ namespace WindowsGame2
      // graphics.PreferredBackBufferWidth = 300;
 
 
+      
+#if !DEBUG
+      graphics.IsFullScreen = true;
+#else
       graphics.PreferredBackBufferHeight = 768;
       graphics.PreferredBackBufferWidth = 1024;
-//#if !DEBUG
- //     graphics.IsFullScreen = true;
+#endif
+
+
       graphics.PreferMultiSampling = true;
-//#endif
       graphics.ApplyChanges();
       Content.RootDirectory = "Content";
 
