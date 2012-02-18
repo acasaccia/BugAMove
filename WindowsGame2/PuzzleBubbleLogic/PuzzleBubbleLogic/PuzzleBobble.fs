@@ -77,6 +77,12 @@ type GameStatus =
     | Win = 1
     | Lost = 2
     | Ready = 3 
+
+//TODO: use GameEvents to share data with renderer
+type GameEvents = 
+    | BallExplosion 
+    | BallDocked
+
 type ScoreEntry = 
     {
         PlayerName : string
@@ -467,7 +473,11 @@ let DockBall (game_state: GameState, grid: Option<Ball> [,] , ball : Ball) : Lis
                 deletedList.contents <- List.concat [ DeleteUnvisitedGridBalls(grid)  ; !game_state.FallingBalls]
                 GridBallsSetUnvisited(!game_state.Grid)
                 Sound.PuzzleBobbleSoundManager.playSound(Sound.PuzzleBobbleSoundManager.SoundsEvent.BALL_EXPLOSION)
-            UpdateScore(l.Length, game_state)
+            
+            if l.Length >= BallClusterSize then
+                UpdateScore(l.Length, game_state)
+            else
+                UpdateScore(0, game_state)
             
     deletedList.contents 
 
@@ -639,7 +649,10 @@ let CheckForCollision (b : ClimbingBall) : bool =
     found
 
 
-           
+let play_against_roof(dt:float32<s>) =
+    ()
+let play_against_time(dt:float32<s>) =
+    ()               
 
 let update_state(dt:float32<s>) =
  //   Console.WriteLine("update_state")

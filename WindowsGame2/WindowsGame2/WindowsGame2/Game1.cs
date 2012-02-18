@@ -31,6 +31,8 @@ namespace WindowsGame2
       
 #if !DEBUG
       graphics.IsFullScreen = true;
+       graphics.PreferredBackBufferHeight = 768;
+      graphics.PreferredBackBufferWidth = 1024;
 #else
       graphics.PreferredBackBufferHeight = 768;
       graphics.PreferredBackBufferWidth = 1024;
