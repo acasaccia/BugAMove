@@ -261,6 +261,7 @@ namespace WindowsGame2
                         //PuzzleBobble.update_script();
 
                         //Casanova.commit_variable_updates();
+                        //FIXME: remove thread sleep with an idle cycle
                         System.Threading.Thread.Sleep(5000);
                         this.pause();
                         this.OnBackToMenu();
