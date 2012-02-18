@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-
+using Microsoft.Kinect;// .Nui;
+using System.Diagnostics;
 namespace PuzzleBobbleInputHandling
 {
     public class PuzzleBobbleGameInputState {
@@ -22,13 +23,23 @@ namespace PuzzleBobbleInputHandling
         public enum InputDevice { KEYBOARD, GAMEPAD };
         private static PuzzleBobbleGameInputState inputState;
         private bool running;
-
         private InputDevice inputDevice;
+   
+        
+        
+      
+
+        
         public InputManager(Game game) : base(game) {
             inputState = new PuzzleBobbleGameInputState();
             Game.Services.AddService(typeof(InputManager),this);
 
             this.inputDevice = InputDevice.GAMEPAD;
+           // kinectInit();
+            KinectManager.getInstance();
+            //kinectSensor;
+            //this.kinectSensor ;//= new KinectSensor();
+
         }
         public static PuzzleBobbleGameInputState getState()
         {
@@ -58,6 +69,18 @@ namespace PuzzleBobbleInputHandling
             if (!running)
                 return;
 
+            
+
+            //if (kinectSensor.IsRunning)
+            //{
+            //   // Console.WriteLine("WOW kinect is running");
+            ////    kinectSensor.SkeletonStream.
+            //    if (kinectSensor.SkeletonStream.IsEnabled)
+            //    {
+            //        Console.WriteLine("skeleton stream is enabled");
+
+            //    }
+            //}
             //switch (this.inputDevice) {
 
             //    case InputDevice.GAMEPAD: {
@@ -65,7 +88,7 @@ namespace PuzzleBobbleInputHandling
             var state = Keyboard.GetState();
             if (state != null)
             {
-               
+                    
 
                 //
                 inputState.ArrowMovedLeft = state.IsKeyDown(Keys.Left);
@@ -83,7 +106,10 @@ namespace PuzzleBobbleInputHandling
                 inputState.ArrowMovedRight |= gamePadState.IsButtonDown(Buttons.DPadRight);
                 inputState.BallShoot |= gamePadState.IsButtonDown(Buttons.A);
                 inputState.Continue |= gamePadState.IsButtonDown(Buttons.B);
-            }      
+            }
+
+            inputState.ArrowMovedLeft = KinectManager.getInstance().isMovingLeft();
+            inputState.ArrowMovedRight = KinectManager.getInstance().isMovingRight();
                 //    break;
                 //}
                 //default:
