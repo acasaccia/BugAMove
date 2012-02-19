@@ -91,8 +91,8 @@ namespace PuzzleBobbleInputHandling
                     
 
                 //
-                inputState.ArrowMovedLeft = state.IsKeyDown(Keys.Left);
-                inputState.ArrowMovedRight = state.IsKeyDown(Keys.Right);
+                inputState.ArrowMovedLeft = state.IsKeyDown(Keys.Left) || KinectManager.getInstance().isMovingLeft();
+                inputState.ArrowMovedRight = state.IsKeyDown(Keys.Right) || KinectManager.getInstance().isMovingRight();
                 inputState.BallShoot = state.IsKeyDown(Keys.Space);
                 inputState.Continue = state.IsKeyDown(Keys.Enter);
                 inputState.SoundOn = state.IsKeyDown(Keys.M);
@@ -108,8 +108,6 @@ namespace PuzzleBobbleInputHandling
                 inputState.Continue |= gamePadState.IsButtonDown(Buttons.B);
             }
 
-            inputState.ArrowMovedLeft = KinectManager.getInstance().isMovingLeft();
-            inputState.ArrowMovedRight = KinectManager.getInstance().isMovingRight();
                 //    break;
                 //}
                 //default:
