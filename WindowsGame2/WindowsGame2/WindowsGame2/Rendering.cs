@@ -62,7 +62,7 @@ namespace WindowsGame2
       this.viewPortDimension = new Vector2(this.game.graphics.PreferredBackBufferWidth, this.game.graphics.PreferredBackBufferHeight);
 
       // camera posizione iniziale
-      this.camera = new Camera(new Vector3(1.74f, 3.0f, 5.4f));
+      this.camera = new Camera(new Vector3(1.74f, 3.0f, 5.2f));
       this.camera.updateViewMatrix();
  
       game.Services.AddService(typeof(Camera), this.camera);
@@ -139,7 +139,6 @@ namespace WindowsGame2
     }
     private void DrawArrow(float rotation) {
         Vector3 distance = PuzzleBobble.game_state.ReadyBall.Value.center.toXNAVector;
-        float halfPI = (float)Math.PI / 2.0f;
         this.DrawModel(this.gear, new Vector3(0.015f, 0.015f, 0.015f), distance, new Vector3(0.0f, 0.0f, rotation), null);
         this.DrawModel(this.gear, new Vector3(0.03f, 0.03f, 0.05f), new Vector3(2.2f, -0.7f, -0.4f), new Vector3(0.0f, 0.0f, -rotation * 0.5f), null);
         this.DrawModel(this.gear, new Vector3(0.02f, 0.02f, 0.02f), new Vector3(1.4f, -0.4f, -0.2f), new Vector3(0.0f, 0.0f, rotation * 0.75f), null);
@@ -372,12 +371,12 @@ namespace WindowsGame2
         float ZSIZE = BoxBoundingBox.Max.Z - BoxBoundingBox.Min.Z;
         for (int i = -1; i < 4; i++)
         {
-            this.DrawModel(Box, Vector3.One, new Vector3(-XSIZE /2.0f  , YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
-            this.DrawModel(Box, Vector3.One, new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X, YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
+            this.DrawModel(Box, Vector3.One, new Vector3(-XSIZE /2.0f  , YSIZE + (YSIZE * 2 * i), -1.0f), Vector3.Zero, null);
+            this.DrawModel(Box, Vector3.One, new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X, YSIZE + (YSIZE * 2 * i), -1.0f), Vector3.Zero, null);
           
         }
         float roofScaleX = PuzzleBobble.BoxDimension.X / XSIZE;
-        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 1.0f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y + YSIZE - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, 0.0f), Vector3.Zero, null);
+        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 1.0f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y + YSIZE - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, -1.0f), Vector3.Zero, null);
 
        
         //pretty works 
