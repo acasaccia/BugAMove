@@ -37,6 +37,7 @@ namespace WindowsGame2
       private SpriteFont font;
       Model arrow;
       Model box;
+      Model gear;
       private Matrix projection;
       public  Camera camera;
 
@@ -60,15 +61,11 @@ namespace WindowsGame2
       Game.Services.AddService(typeof(IRendering3DService), this);
       this.viewPortDimension = new Vector2(this.game.graphics.PreferredBackBufferWidth, this.game.graphics.PreferredBackBufferHeight);
 
-      this.camera = new Camera(new Vector3(1.5f, 2.6f, 5.4f));
-       // this.camera.setAbsolutePosition(new Vector3(1.5f, 2.4f, 5.2f ));
-        this.camera.updateViewMatrix();
-//        {X:1.519999 Y:2.419998 Z:5.259996}
-
-           
-
+      // camera posizione iniziale
+      this.camera = new Camera(new Vector3(1.74f, 3.0f, 5.4f));
+      this.camera.updateViewMatrix();
+ 
       game.Services.AddService(typeof(Camera), this.camera);
-      //game.Services.AddService(typeof(WorldData2D), worldData);
     }
 
     
@@ -141,42 +138,12 @@ namespace WindowsGame2
 
     }
     private void DrawArrow(float rotation) {
-        Matrix[] transforms = new Matrix[this.arrow.Bones.Count];
-        float aspectRatio = GraphicsDevice.Viewport.AspectRatio;
-
-        GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-        
-        this.arrow.CopyAbsoluteBoneTransformsTo(transforms);
-        ModelMesh cube = this.arrow.Meshes[4];
-       // Vector3 distance = PuzzleBobble.game_state.ReadyBall.Value.center.toXNAVector - cube.BoundingSphere.Center;
-        //Vector3 distance = PuzzleBobble.game_state.ReadyBall.Value.center.toXNAVector;
         Vector3 distance = PuzzleBobble.game_state.ReadyBall.Value.center.toXNAVector;
-        distance.Z -= 1.3f;
-        //Console.WriteLine("Bounding sphere : " + cube.BoundingSphere.Center + " rad " + cube.BoundingSphere.Radius);
-        Matrix rot = Matrix.CreateRotationZ(rotation );
-        Matrix t = Matrix.CreateTranslation(distance);
-        for (int i = 0 ; i < this.arrow.Meshes.Count ; i++){
-            ModelMesh mesh = this.arrow.Meshes[i];
-            if (i == 3 || i ==4)
-                continue;
-
-            
-
-            foreach (BasicEffect effect in mesh.Effects)
-            {
-            
-                effect.EnableDefaultLighting();
-                effect.CurrentTechnique.Passes[0].Apply();
-                effect.View = this.camera.viewMatrix;
-                
-                if (i != 4)
-                    effect.World = transforms[mesh.ParentBone.Index] *  rot *t;//*
-                else
-                    effect.World = transforms[mesh.ParentBone.Index] *t;//*
-                effect.Projection = this.projection;
-            }
-            mesh.Draw();
-        }
+        float halfPI = (float)Math.PI / 2.0f;
+        this.DrawModel(this.gear, new Vector3(0.015f, 0.015f, 0.015f), distance, new Vector3(0.0f, 0.0f, rotation), null);
+        this.DrawModel(this.gear, new Vector3(0.03f, 0.03f, 0.05f), new Vector3(2.2f, -0.7f, -0.4f), new Vector3(0.0f, 0.0f, -rotation * 0.5f), null);
+        this.DrawModel(this.gear, new Vector3(0.02f, 0.02f, 0.02f), new Vector3(1.4f, -0.4f, -0.2f), new Vector3(0.0f, 0.0f, rotation * 0.75f), null);
+        this.DrawModel(this.arrow, new Vector3(0.01f, 0.02f, 0.01f), distance, new Vector3(0.0f, 0.0f, rotation - (float)Math.PI), null);
     }
     private void DrawMessage(string message) {
 
@@ -319,7 +286,8 @@ namespace WindowsGame2
     {
       spriteBatch = new SpriteBatch(GraphicsDevice);
       ballMesh = Game.Content.Load<Model>("sphere");
-      arrow = Game.Content.Load<Model>("balestra");
+      arrow = Game.Content.Load<Model>("arrow");
+      gear = Game.Content.Load<Model>("gear");
       this.font = game.Content.Load<SpriteFont>("BigFont");
       Box = Game.Content.Load<Model>("Crate1");
  //     this.world = Game.Content.Load<Model>("RoadSign");
@@ -347,7 +315,7 @@ namespace WindowsGame2
             return;
         int h = GraphicsDevice.Viewport.Bounds.Height;
         int w = GraphicsDevice.Viewport.Bounds.Width;
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+        GraphicsDevice.Clear(Color.Black);
 
         int row = PuzzleBobble.game_state.Grid.Value.GetLength(0);
         int column = PuzzleBobble.game_state.Grid.Value.GetLength(1);
@@ -402,7 +370,7 @@ namespace WindowsGame2
         float XSIZE = BoxBoundingBox.Max.X - BoxBoundingBox.Min.X;
         float YSIZE = BoxBoundingBox.Max.Y - BoxBoundingBox.Min.Y;
         float ZSIZE = BoxBoundingBox.Max.Z - BoxBoundingBox.Min.Z;
-        for (int i = 0; i < 4; i++)
+        for (int i = -1; i < 4; i++)
         {
             this.DrawModel(Box, Vector3.One, new Vector3(-XSIZE /2.0f  , YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
             this.DrawModel(Box, Vector3.One, new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X, YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
