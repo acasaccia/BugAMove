@@ -8,11 +8,11 @@ namespace PuzzleBobbleInputHandling
     class KinectManager
     {
         private KinectSensor kinectSensor;
-        private Skeleton[] skeletons;
         public enum Movement { LEFT, RIGHT, IDLE };
         private static KinectManager instance = null;
-        private float minimumMovement = 0;
+        private float minimumMovement = 0.2f;
         private Movement kinectMovement = Movement.IDLE;
+        private bool kinectShoot = false;
         public static KinectManager getInstance() {
             if (instance == null)
                 instance = new KinectManager();
@@ -22,46 +22,68 @@ namespace PuzzleBobbleInputHandling
             kinectInit();
         }
 
+        float prevLeftHandY;
+        SkeletonFrame skelFrame;
+        Skeleton[] skeletons;
         private void OnSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
-            SkeletonFrame skelFrame = e.OpenSkeletonFrame();
-
-            if (skeletons == null)
-            {
-                skeletons = new Skeleton[kinectSensor.SkeletonStream.FrameSkeletonArrayLength];
-            }   // skelFrame.
-            // skelFrame.
+            skelFrame = e.OpenSkeletonFrame();
+            skeletons = new Skeleton[kinectSensor.SkeletonStream.FrameSkeletonArrayLength];          
             if (skelFrame != null)
             {
                 skelFrame.CopySkeletonDataTo(skeletons);
-                var rightHand = skeletons[0].Joints[JointType.HandRight].Position;
-                var rightElbow = skeletons[0].Joints[JointType.ElbowRight].Position;
-
-                float diff = rightHand.X - rightElbow.X;
-
-                if (Math.Abs(diff) > minimumMovement)
-                {
-                    if (diff > 0)
+                foreach (Skeleton skel in skeletons) {
+                    if (skel.TrackingState >= SkeletonTrackingState.PositionOnly)
                     {
-                        this.kinectMovement = Movement.RIGHT;
-                    }
-                    else {
-                        this.kinectMovement = Movement.LEFT;
+                        var rightHand = skel.Joints[JointType.HandRight].Position;
+                        var centerShoulder = skel.Joints[JointType.ShoulderCenter].Position;
+                        var leftHand = skel.Joints[JointType.HandLeft].Position;
+
+                        if (leftHand.Y > centerShoulder.Y && prevLeftHandY < centerShoulder.Y)
+                            this.kinectShoot = true;
+                        else
+                            this.kinectShoot = false;
+
+                        prevLeftHandY = leftHand.Y;
+
+                        float diff = rightHand.X - centerShoulder.X;
+
+                        if (Math.Abs(diff) > minimumMovement)
+                        {
+                            if (diff > 0)
+                            {
+                                this.kinectMovement = Movement.RIGHT;
+                            }
+                            else
+                            {
+                                this.kinectMovement = Movement.LEFT;
+                            }
+                        }
+                        else
+                        {
+                            this.kinectMovement = Movement.IDLE;
+                        }
+#if DEBUG
+                        Console.WriteLine(rightHand.X);
+#endif
+                        skelFrame.Dispose();
+                        return;
                     }
                 }
-                else {
-                    this.kinectMovement = Movement.IDLE;
-                }
-                
-                //Console.WriteLine(rightHand.X);
+                skelFrame.Dispose();
             }
         }
-        public bool isMovingLeft() {
+        public bool isMovingLeft()
+        {
             return this.kinectMovement == Movement.LEFT;
         }
         public bool isMovingRight()
         {
             return this.kinectMovement == Movement.RIGHT;
+        }
+        public bool isShooting()
+        {
+            return this.kinectShoot;
         }
         private void SetSensor(KinectSensor newSensor)
         {
@@ -74,22 +96,12 @@ namespace PuzzleBobbleInputHandling
 
             if (kinectSensor != null)
             {
-               // Debug.Assert(kinectSensor.Status == KinectStatus.Connected, "This should only be called with Connected sensors.");
-            //    kinectSensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-             //   kinectSensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
                 kinectSensor.SkeletonStream.Enable();
-                kinectSensor.AllFramesReady += _sensor_AllFramesReady;
                 kinectSensor.SkeletonFrameReady += OnSkeletonFrameReady;
                 kinectSensor.Start();
             }
         }
-        void _sensor_AllFramesReady(object sender, AllFramesReadyEventArgs e)
-        {
-            bool gotColor = false;
-            bool gotDepth = false;
 
-
-        }
         public void kinectInit()
         {
             KinectSensor.KinectSensors.StatusChanged += (object sender, StatusChangedEventArgs e) =>
