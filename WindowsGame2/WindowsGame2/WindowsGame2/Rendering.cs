@@ -139,19 +139,23 @@ namespace WindowsGame2
     }
     private void DrawArrow(float rotation) {
         Vector3 distance = PuzzleBobble.game_state.ReadyBall.Value.center.toXNAVector;
-        this.DrawModel(this.gear, new Vector3(0.015f, 0.015f, 0.015f), distance, new Vector3(0.0f, 0.0f, rotation), null);
-        this.DrawModel(this.gear, new Vector3(0.03f, 0.03f, 0.05f), new Vector3(2.2f, -0.7f, -0.4f), new Vector3(0.0f, 0.0f, -rotation * 0.5f), null);
-        this.DrawModel(this.gear, new Vector3(0.02f, 0.02f, 0.02f), new Vector3(1.4f, -0.4f, -0.2f), new Vector3(0.0f, 0.0f, rotation * 0.75f), null);
-        this.DrawModel(this.arrow, new Vector3(0.01f, 0.02f, 0.01f), distance, new Vector3(0.0f, 0.0f, rotation - (float)Math.PI), null);
+        float smallGearScaleFactor = 0.015f;
+        float mediumGearScaleFactor = 0.02f;
+        float bigGearScaleFactor = 0.03f;
+        this.DrawModel(this.gear, new Vector3(smallGearScaleFactor), new Vector3(distance.X, distance.Y - 0.1f, -0.3f), new Vector3(0.0f, 0.0f, rotation), null);
+        this.DrawModel(this.gear, new Vector3(bigGearScaleFactor), new Vector3(2.2f, -0.7f, -0.8f), new Vector3(0.0f, 0.0f, -rotation * 0.5f), null);
+        this.DrawModel(this.gear, new Vector3(mediumGearScaleFactor), new Vector3(1.4f, -0.4f, -0.6f), new Vector3(0.0f, 0.0f, rotation * 0.75f), null);
+        this.DrawModel(this.arrow, new Vector3(0.01f, 0.02f, 0.01f), new Vector3(distance.X, distance.Y, -0.2f), new Vector3(0.0f, 0.0f, rotation - (float)Math.PI), null);
     }
     private void DrawMessage(string message) {
 
         Vector2 messageDimension = this.font.MeasureString(message);
-        Vector2 messagePosition = new Vector2(  this.game.graphics.PreferredBackBufferWidth / 2 - messageDimension.X / 2,
-                                                this.game.graphics.PreferredBackBufferHeight / 2 - messageDimension.Y /2
-                                                );
+        Vector2 messagePosition = new Vector2(
+            this.game.graphics.PreferredBackBufferWidth / 2 - messageDimension.X / 2,
+            this.game.graphics.PreferredBackBufferHeight / 2 - messageDimension.Y /2
+        );
         spriteBatch.Begin();
-        spriteBatch.DrawString(this.font, message,messagePosition , Color.Black, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
+        spriteBatch.DrawString(this.font, message,messagePosition , Color.White, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
         spriteBatch.End();
     }
     private void DrawModel(Model m, Vector3 scale, Vector3 pos, Vector3 rotations, Nullable<Color> col)
@@ -277,9 +281,9 @@ namespace WindowsGame2
    
     Model Box;
     //BoundingBox BoxBounds;
-    BoundingSphere BoxMergedBoundingSphere;
+    //BoundingSphere BoxMergedBoundingSphere;
     BoundingBox BoxBoundingBox;
-    Model skyDome;
+    //Model skyDome;
     //pillarBox;
     protected override void LoadContent()
     {
