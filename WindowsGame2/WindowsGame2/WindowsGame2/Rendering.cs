@@ -62,7 +62,7 @@ namespace WindowsGame2
       this.viewPortDimension = new Vector2(this.game.graphics.PreferredBackBufferWidth, this.game.graphics.PreferredBackBufferHeight);
 
       // camera posizione iniziale
-      this.camera = new Camera(new Vector3(1.74f, 3.0f, 5.2f));
+      this.camera = new Camera(new Vector3(BoxBoundingBox.Max.X + PuzzleBobble.BoxDimension.X / 2.0f, 2.8f, 5.2f));
       this.camera.updateViewMatrix();
  
       game.Services.AddService(typeof(Camera), this.camera);
@@ -81,8 +81,8 @@ namespace WindowsGame2
       base.Initialize();
 
       this.projection =
-          Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(60.0f),
-          GraphicsDevice.Viewport.AspectRatio, 0.01f, 10000.0f);
+          Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(58.0f), GraphicsDevice.Viewport.AspectRatio, 0.01f, 10000.0f);
+          //Matrix.CreateOrthographic(8.0f, 6.0f, 0.01f, 10000.0f);
     }
 
     public BoundingBox CalculateBoundingBox(Model m_model)
@@ -142,10 +142,11 @@ namespace WindowsGame2
         float smallGearScaleFactor = 0.015f;
         float mediumGearScaleFactor = 0.02f;
         float bigGearScaleFactor = 0.03f;
-        this.DrawModel(this.gear, new Vector3(smallGearScaleFactor), new Vector3(distance.X, distance.Y - 0.1f, -0.3f), new Vector3(0.0f, 0.0f, rotation), null);
-        this.DrawModel(this.gear, new Vector3(bigGearScaleFactor), new Vector3(2.2f, -0.7f, -0.8f), new Vector3(0.0f, 0.0f, -rotation * 0.5f), null);
-        this.DrawModel(this.gear, new Vector3(mediumGearScaleFactor), new Vector3(1.4f, -0.4f, -0.6f), new Vector3(0.0f, 0.0f, rotation * 0.75f), null);
-        this.DrawModel(this.arrow, new Vector3(0.01f, 0.02f, 0.01f), new Vector3(distance.X, distance.Y, -0.2f), new Vector3(0.0f, 0.0f, rotation - (float)Math.PI), null);
+        float arrowScaleFactor = 0.008f;
+        this.DrawModel(this.gear, new Vector3(smallGearScaleFactor), new Vector3(distance.X, distance.Y, distance.Z - 0.2f), new Vector3(0.0f, 0.0f, rotation), null);
+        this.DrawModel(this.gear, new Vector3(bigGearScaleFactor), new Vector3(distance.X + 0.5f, distance.Y - 0.7f, distance.Z - 0.4f), new Vector3(0.0f, 0.0f, -rotation * 0.1f), null);
+        this.DrawModel(this.gear, new Vector3(mediumGearScaleFactor), new Vector3(distance.X - 0.5f, distance.Y - 0.5f, distance.Z - 0.3f), new Vector3(0.0f, 0.0f, rotation * 0.3f), null);
+        this.DrawModel(this.arrow, new Vector3(arrowScaleFactor), new Vector3(distance.X, distance.Y, distance.Z - 0.3f), new Vector3(0.0f, 0.0f, rotation), null);
     }
     private void DrawMessage(string message) {
 
@@ -165,9 +166,6 @@ namespace WindowsGame2
         
         GraphicsDevice.DepthStencilState = DepthStencilState.Default;
         m.CopyAbsoluteBoneTransformsTo(transforms);
-        Matrix projection =
-            Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(60.0f),
-            aspectRatio, 0.01f, 10000.0f);
        
        Matrix scaleMatrix = Matrix.CreateScale(scale);
       //  Matrix.
@@ -175,24 +173,21 @@ namespace WindowsGame2
        Matrix rotationMatrix = Matrix.CreateFromYawPitchRoll( rotations.Y, rotations.X, rotations.Z);
         foreach (ModelMesh mesh in m.Meshes)
         {
-          
             foreach (BasicEffect effect in mesh.Effects)
             {
-                //new stuff
-              //  mesh.BoundingSphere.
                 if (col.HasValue)
+                {
+                    effect.DiffuseColor = Color.DarkGray.ToVector3();
                     effect.EmissiveColor = col.Value.ToVector3();
+                    effect.SpecularPower = 96.0f;
+                }
                 
                 effect.EnableDefaultLighting();
                 effect.CurrentTechnique.Passes[0].Apply();
                 effect.View = this.camera.viewMatrix;
                 
-                effect.World = transforms[mesh.ParentBone.Index] *
-                    scaleMatrix * rotationMatrix * translationMatrix;
-                effect.Projection = projection;
-               // effect.World = 0.0f *
-                 //   transforms[mesh.ParentBone.Index] *
-                   //Matrix.CreateScale(new Vector3(0.1f, 0.1f, 0.1f));
+                effect.World = transforms[mesh.ParentBone.Index] * scaleMatrix * rotationMatrix * translationMatrix;
+                effect.Projection = this.projection;
             }
             mesh.Draw();
         }
@@ -283,6 +278,7 @@ namespace WindowsGame2
     //BoundingBox BoxBounds;
     //BoundingSphere BoxMergedBoundingSphere;
     BoundingBox BoxBoundingBox;
+    Texture2D background;
     //Model skyDome;
     //pillarBox;
     protected override void LoadContent()
@@ -293,7 +289,9 @@ namespace WindowsGame2
       gear = Game.Content.Load<Model>("gear");
       this.font = game.Content.Load<SpriteFont>("BigFont");
       Box = Game.Content.Load<Model>("Crate1");
- //     this.world = Game.Content.Load<Model>("RoadSign");
+      background = Game.Content.Load<Texture2D>("metal-background");
+
+      //     this.world = Game.Content.Load<Model>("RoadSign");
    
       //this.BoxMergedBoundingSphere = new BoundingSphere();
       //foreach (var mesh in Box.Meshes)
@@ -318,7 +316,17 @@ namespace WindowsGame2
             return;
         int h = GraphicsDevice.Viewport.Bounds.Height;
         int w = GraphicsDevice.Viewport.Bounds.Width;
-        GraphicsDevice.Clear(Color.Black);
+
+        spriteBatch.Begin();
+
+        spriteBatch.Draw(
+            this.background,
+            Vector2.Zero,
+            new Rectangle(0,0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height),
+            Color.White
+        );
+
+        spriteBatch.End();
 
         int row = PuzzleBobble.game_state.Grid.Value.GetLength(0);
         int column = PuzzleBobble.game_state.Grid.Value.GetLength(1);
@@ -375,12 +383,12 @@ namespace WindowsGame2
         float ZSIZE = BoxBoundingBox.Max.Z - BoxBoundingBox.Min.Z;
         for (int i = -1; i < 4; i++)
         {
-            this.DrawModel(Box, Vector3.One, new Vector3(-XSIZE /2.0f  , YSIZE + (YSIZE * 2 * i), -1.0f), Vector3.Zero, null);
-            this.DrawModel(Box, Vector3.One, new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X, YSIZE + (YSIZE * 2 * i), -1.0f), Vector3.Zero, null);
+            this.DrawModel(Box, Vector3.One, new Vector3(-XSIZE /2.0f  , YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
+            this.DrawModel(Box, Vector3.One, new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X, YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
           
         }
         float roofScaleX = PuzzleBobble.BoxDimension.X / XSIZE;
-        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 1.0f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y + YSIZE - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, -1.0f), Vector3.Zero, null);
+        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 1.0f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y + YSIZE - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, 0.0f), Vector3.Zero, null);
 
        
         //pretty works 
@@ -393,7 +401,7 @@ namespace WindowsGame2
         
         if (PuzzleBobble.game_state.LevelStatus.Status.Value == PuzzleBobble.GameStatus.Ready)
         {
-            this.DrawMessage("Level Ready : Press Enter to start Game");
+            this.DrawMessage("Level Ready Press Enter to start");
         }
         else if (PuzzleBobble.game_state.LevelStatus.Status.Value == PuzzleBobble.GameStatus.Win)
         {
