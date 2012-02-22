@@ -62,7 +62,7 @@ namespace WindowsGame2
       this.viewPortDimension = new Vector2(this.game.graphics.PreferredBackBufferWidth, this.game.graphics.PreferredBackBufferHeight);
 
       // camera posizione iniziale
-      this.camera = new Camera(new Vector3(BoxBoundingBox.Max.X + PuzzleBobble.BoxDimension.X / 2.0f, 2.8f, 5.2f));
+      this.camera = new Camera(new Vector3(BoxBoundingBox.Max.X + PuzzleBobble.BoxDimension.X / 2.0f, 2.7f, 4.9f));
       this.camera.updateViewMatrix();
  
       game.Services.AddService(typeof(Camera), this.camera);
@@ -143,10 +143,10 @@ namespace WindowsGame2
         float mediumGearScaleFactor = 0.02f;
         float bigGearScaleFactor = 0.03f;
         float arrowScaleFactor = 0.008f;
-        this.DrawModel(this.gear, new Vector3(smallGearScaleFactor), new Vector3(distance.X, distance.Y, distance.Z - 0.2f), new Vector3(0.0f, 0.0f, rotation), null);
-        this.DrawModel(this.gear, new Vector3(bigGearScaleFactor), new Vector3(distance.X + 0.5f, distance.Y - 0.7f, distance.Z - 0.4f), new Vector3(0.0f, 0.0f, -rotation * 0.1f), null);
-        this.DrawModel(this.gear, new Vector3(mediumGearScaleFactor), new Vector3(distance.X - 0.5f, distance.Y - 0.5f, distance.Z - 0.3f), new Vector3(0.0f, 0.0f, rotation * 0.3f), null);
-        this.DrawModel(this.arrow, new Vector3(arrowScaleFactor), new Vector3(distance.X, distance.Y, distance.Z - 0.3f), new Vector3(0.0f, 0.0f, rotation), null);
+        this.DrawModel(this.gear, new Vector3(smallGearScaleFactor), new Vector3(distance.X, distance.Y, distance.Z), new Vector3(0.0f, 0.0f, -rotation * 2.0f), null);
+        this.DrawModel(this.gear, new Vector3(bigGearScaleFactor), new Vector3(distance.X + 0.5f, distance.Y - 0.7f, distance.Z + 0.1f), new Vector3(0.0f, 0.0f, -rotation * 0.1f), null);
+        this.DrawModel(this.gear, new Vector3(mediumGearScaleFactor), new Vector3(distance.X - 0.5f, distance.Y - 0.4f, distance.Z + 0.1f), new Vector3(0.0f, 0.0f, rotation * 0.3f), null);
+        this.DrawModel(this.arrow, new Vector3(arrowScaleFactor), new Vector3(distance.X, distance.Y, distance.Z), new Vector3(0.0f, 0.0f, rotation), null);
     }
     private void DrawMessage(string message) {
 
@@ -194,7 +194,6 @@ namespace WindowsGame2
     }
     public BoundingBox BoundingBoxFromVertex(Model m_model)
     {
-
         // Create variables to hold min and max xyz values for the model. Initialise them to extremes
         Vector3 modelMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         Vector3 modelMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
@@ -278,7 +277,7 @@ namespace WindowsGame2
     //BoundingBox BoxBounds;
     //BoundingSphere BoxMergedBoundingSphere;
     BoundingBox BoxBoundingBox;
-    Texture2D background;
+    Texture2D background, background2;
     //Model skyDome;
     //pillarBox;
     protected override void LoadContent()
@@ -288,8 +287,9 @@ namespace WindowsGame2
       arrow = Game.Content.Load<Model>("arrow");
       gear = Game.Content.Load<Model>("gear");
       this.font = game.Content.Load<SpriteFont>("BigFont");
-      Box = Game.Content.Load<Model>("Crate1");
-      background = Game.Content.Load<Texture2D>("metal-background");
+      Box = Game.Content.Load<Model>("cube");
+      background = Game.Content.Load<Texture2D>("space");
+      background2 = Game.Content.Load<Texture2D>("space-dust");
 
       //     this.world = Game.Content.Load<Model>("RoadSign");
    
@@ -317,16 +317,7 @@ namespace WindowsGame2
         int h = GraphicsDevice.Viewport.Bounds.Height;
         int w = GraphicsDevice.Viewport.Bounds.Width;
 
-        spriteBatch.Begin();
-
-        spriteBatch.Draw(
-            this.background,
-            Vector2.Zero,
-            new Rectangle(0,0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height),
-            Color.White
-        );
-
-        spriteBatch.End();
+        this.DrawBackground(gameTime);
 
         int row = PuzzleBobble.game_state.Grid.Value.GetLength(0);
         int column = PuzzleBobble.game_state.Grid.Value.GetLength(1);
@@ -381,14 +372,15 @@ namespace WindowsGame2
         float XSIZE = BoxBoundingBox.Max.X - BoxBoundingBox.Min.X;
         float YSIZE = BoxBoundingBox.Max.Y - BoxBoundingBox.Min.Y;
         float ZSIZE = BoxBoundingBox.Max.Z - BoxBoundingBox.Min.Z;
-        for (int i = -1; i < 4; i++)
+        for (int i = -2; i < 3; i++)
         {
-            this.DrawModel(Box, Vector3.One, new Vector3(-XSIZE /2.0f  , YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
-            this.DrawModel(Box, Vector3.One, new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X, YSIZE + (YSIZE * 2 * i), 0.0f), Vector3.Zero, null);
+            this.DrawModel(Box, new Vector3(1.0f, 1.0f, 0.2f), new Vector3(-XSIZE /2.0f - 0.2f , YSIZE + (YSIZE * i), 0.0f), Vector3.Zero, null);
+            this.DrawModel(Box, new Vector3(1.0f, 1.0f, 0.2f), new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X + 0.2f, YSIZE + (YSIZE * i), 0.0f), Vector3.Zero, null);
           
         }
         float roofScaleX = PuzzleBobble.BoxDimension.X / XSIZE;
-        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 1.0f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y + YSIZE - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, 0.0f), Vector3.Zero, null);
+        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 0.2f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, 0.0f), Vector3.Zero, null);
+        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 0.2f), new Vector3(XSIZE * roofScaleX / 2.0f, 0.0f - YSIZE, 0.0f), Vector3.Zero, null);
 
        
         //pretty works 
@@ -417,6 +409,31 @@ namespace WindowsGame2
  
 
       
+    }
+
+    Vector2 cloudsPosition = new Vector2(0.0f);
+    private void DrawBackground(GameTime gameTime)
+    {
+        cloudsPosition.Y += (float)gameTime.ElapsedGameTime.TotalSeconds * 96;
+        cloudsPosition.Y = cloudsPosition.Y % this.background2.Height;
+
+        spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
+
+        spriteBatch.Draw(
+            this.background,
+            Vector2.Zero,
+            new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height),
+            Color.White
+        );
+
+        spriteBatch.Draw(
+            this.background2,
+            Vector2.Zero,
+            new Rectangle(0, (int)cloudsPosition.Y, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height),
+            Color.White
+        );
+
+        spriteBatch.End();
     }
 
 
