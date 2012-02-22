@@ -32,17 +32,17 @@ let BoxTopMostLeftFrontCorner : Vector3<m> = {X = 0.0f<m>  ; Y = BoxDimension.Y;
 let FloorMiddlePoint : Vector3<m> = { X =  BoxDimension.X / 2.0f  ; Y = 0.0f<m>; Z = 0.0f<m>}
 let BallMaxDistance = 10.0f<m>
 let BallCenterMinY = 2.0f * BallDiameter
-let DefaultRoofStepTimeDelta : float32<s>= 20.0f<s>
+let DefaultRoofStepTimeDelta : float32<s>= 30.0f<s>
 let ArrowAngleInit () = Microsoft.Xna.Framework.MathHelper.PiOver2
 
 let arrow_rotation_delta = 0.02f
-let ArrowMaxAngle: float32 = float32 Math.PI / 2.0f - (0.1f)
+let ArrowMaxAngle: float32 = float32 Math.PI / 2.0f - (0.3f)
 
 let PointsPerBall = 10
 // ---------------------------- COLORS ---------------------
 let AvailableColors = 
     [
-    Microsoft.Xna.Framework.Color.Black;
+    Microsoft.Xna.Framework.Color.Purple;
     Microsoft.Xna.Framework.Color.Red;
     Microsoft.Xna.Framework.Color.Green;
     Microsoft.Xna.Framework.Color.Yellow;
