@@ -102,7 +102,7 @@ namespace WindowsGame2.menu
 
                 MenuComponentComposite containerChild = this.currentSelectedComponent;
                 containerChild.setExpanded(true);
-                containerChild.setBounds(this.currentSelectedComponent.getFather().getBounds());
+               // containerChild.setBounds(this.currentSelectedComponent.getFather().getBounds());
                 MenuComponentComposite father = this.currentSelectedComponent.getFather();
                 father.setExpanded(false);
               

@@ -36,7 +36,7 @@ namespace WindowsGame2
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             this.timeFont = game.Content.Load<SpriteFont>("BigFont");
-            this.statsFont = game.Content.Load<SpriteFont>("SimpleFont");
+            this.statsFont = game.Content.Load<SpriteFont>("HudFont");
             base.LoadContent();
         }
         protected override void Dispose(bool disposing)

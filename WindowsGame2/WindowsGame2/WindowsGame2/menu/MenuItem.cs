@@ -22,6 +22,7 @@ namespace WindowsGame2.menu
         IList<MenuComponentComposite> getAllChildren();
         void setFather(MenuComponentComposite father);
         void setBounds(Rectangle b);
+        void setExpandedBounds(Rectangle b);
         Rectangle getBounds();
         void validate();
 
@@ -41,6 +42,7 @@ namespace WindowsGame2.menu
         protected MenuComponentComposite father;
         protected Texture2D texture;
         protected Rectangle bounds;
+        protected Rectangle expandedBounds;
         protected bool expanded, focus;
         protected SpriteFont font;
         protected string title;
@@ -77,6 +79,11 @@ namespace WindowsGame2.menu
             this.bounds = r;
             this.validate();
         }
+        public void setExpandedBounds(Rectangle r)
+        {
+            this.expandedBounds = r;
+            this.validate();
+        }
         public Rectangle getBounds()
         {
             return this.bounds;
@@ -84,6 +91,7 @@ namespace WindowsGame2.menu
         public void setExpanded(bool val)
         {
             this.expanded = val;
+
         }
         public void setFocus(bool val)
         {
@@ -135,7 +143,7 @@ namespace WindowsGame2.menu
 
         protected IList<MenuComponentComposite> children;
        // protected  MenuComponentComposite father;
-       // protected Rectangle bounds;
+       
         public MenuComponentContainer() {
             this.children = new List<MenuComponentComposite>();
             this.father = null;
@@ -233,8 +241,14 @@ namespace WindowsGame2.menu
                 {
                     c = this.color;
                 }
-                spriteBatch.DrawString(this.font, this.title, new Vector2(this.bounds.X, this.bounds.Y),
-                        c, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
+                Vector2 titleSize = this.font.MeasureString(this.title);
+                float x = this.bounds.X + (this.bounds.Width / 2.0f) - (titleSize.X / 2);
+                //put the title in the middle of the component
+                spriteBatch.DrawString(this.font, this.title, new Vector2(x, this.bounds.Y),
+                            c, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
+            
+            //    spriteBatch.DrawString(this.font, this.title, new Vector2(this.bounds.X, this.bounds.Y),
+              //          c, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
             }
             else {
                 if (title != null && this.expanded)
@@ -270,14 +284,19 @@ namespace WindowsGame2.menu
         }
         public override void validate()
         {
-            this.childHeight = (this.bounds.Height * 10) / 100;
-            this.childWidth = (this.bounds.Width * 10) / 100;
-            this.leftMargin = this.bounds.X + ((this.bounds.Width * 10) / 100);
-            firstChildDeltaY = this.bounds.Y + (( this.bounds.Height * 20) / 100 );
+            //this.childHeight = (this.bounds.Height * 10) / 100;
+            //this.childWidth = (this.bounds.Width * 10) / 100;
+            //this.leftMargin = this.bounds.X + ((this.bounds.Width * 10) / 100);
+            //firstChildDeltaY = this.bounds.Y + (( this.bounds.Height * 20) / 100 );
 
+            this.childHeight = (this.expandedBounds.Height * 10) / 100;
+            this.childWidth = this.expandedBounds.Width;//(this.expandedBounds.Width * 10) / 100;
+            this.leftMargin = 0;// this.expandedBounds.X + ((this.expandedBounds.Width * 10) / 100);
+            firstChildDeltaY = this.expandedBounds.Y + ((this.expandedBounds.Height * 20) / 100);
             for (int i = 0; i < this.children.Count; i++) {
-                children[i].setBounds(new Rectangle(this.leftMargin, this.firstChildDeltaY + this.bounds.Y + (this.childHeight * i),
+                children[i].setBounds(new Rectangle(this.leftMargin, this.firstChildDeltaY + this.expandedBounds.Y + (this.childHeight * i),
                     this.childWidth, this.childHeight));
+                children[i].setExpandedBounds(this.expandedBounds);
             }
 
         }
@@ -285,8 +304,9 @@ namespace WindowsGame2.menu
          //   Console.WriteLine("list add child component " + this.children.Count);
 
             Rectangle b = new Rectangle(this.leftMargin, this.firstChildDeltaY + this.bounds.Y + (this.childHeight * this.children.Count),
-                this.childWidth, this.childHeight);
+                this.bounds.Width - this.leftMargin, this.childHeight);
             c.setBounds(b);
+            c.setExpandedBounds(this.expandedBounds);
             base.addChildComponent(c);
 
         }
@@ -311,16 +331,20 @@ namespace WindowsGame2.menu
                 else {
                     c = color;
                 }
-                spriteBatch.DrawString(this.font, this.title, new Vector2(this.bounds.X, this.bounds.Y), c, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
+                Vector2 titleSize = this.font.MeasureString(this.title);
+                float x = this.bounds.X + (this.bounds.Width / 2.0f) - (titleSize.X / 2);
+                spriteBatch.DrawString(this.font, this.title, new Vector2(x, this.bounds.Y), c, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
+                
+           //     spriteBatch.DrawString(this.font, this.title, new Vector2(this.bounds.X, this.bounds.Y), c, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
                 
                 return;
             }
             
 
             if (title != null && this.expanded) {
-                spriteBatch.Draw(this.texture, this.bounds, Color.White);
-                Vector2 titleDim = this.font.MeasureString(title);
-                int leftCornerX = (int)( bounds.X + (bounds.Width / 2 - (titleDim.X / 2))) ;
+                spriteBatch.Draw(this.texture, this.expandedBounds, Color.White);
+                //Vector2 titleDim = this.font.MeasureString(title);
+                //int leftCornerX = (int)( bounds.X + (bounds.Width / 2 - (titleDim.X / 2))) ;
              
              //   spriteBatch.DrawString(this.font, this.title, new Vector2(leftCornerX, this.bounds.Y), this.color, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
             }
@@ -340,8 +364,8 @@ namespace WindowsGame2.menu
         public int height;
         public int width;
         //public Texture2D texture;
-        private int childDeltaX = 5;
-        private int childDeltaY = 5; //percentage
+        private int childDeltaX = 0;//5;
+        private int childDeltaY = 0;//5; //percentage
         
         public RootMenuItem(int height, int width, Texture2D bgTexture) {
             this.height = height;
@@ -363,8 +387,11 @@ namespace WindowsGame2.menu
 
             int x = (this.bounds.Width * this.childDeltaX) / 100;
             int y = (this.bounds.Height * this.childDeltaY) / 100;
+
+
             Rectangle childBounds = new Rectangle(this.bounds.X + x, this.bounds.Y + y, this.bounds.Width - x *2, this.bounds.Height - y *2);
             c.setBounds(childBounds);
+            c.setExpandedBounds(this.bounds);
             base.addChildComponent(c);
         }
 

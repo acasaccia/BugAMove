@@ -77,7 +77,10 @@ namespace WindowsGame2.menu
                     {
                         c = this.color;
                     }
-                    spriteBatch.DrawString(this.font, this.title , new Vector2(this.bounds.X, this.bounds.Y),
+                    Vector2 titleSize = this.font.MeasureString(this.title);
+                    float x = this.bounds.X + (this.bounds.Width / 2.0f) - (titleSize.X / 2);
+
+                    spriteBatch.DrawString(this.font, this.title , new Vector2(x, this.bounds.Y),//new Vector2(this.bounds.X, 20),// this.bounds.Y),
                             c, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
                 
             }
