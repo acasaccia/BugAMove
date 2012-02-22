@@ -208,24 +208,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="balestra.fbx">
-      <Name>balestra</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-      <ProcessorParameters_Scale>0.7</ProcessorParameters_Scale>
-      <ProcessorParameters_RotationZ>-90</ProcessorParameters_RotationZ>
-      <ProcessorParameters_RotationY>-90</ProcessorParameters_RotationY>
-      <ProcessorParameters_RotationX>180</ProcessorParameters_RotationX>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Crate1.FBX">
-      <Name>Crate1</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="WdCrt_b.jpg">
       <Name>WdCrt_b</Name>
       <Importer>TextureImporter</Importer>
@@ -270,15 +252,36 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="metal-background.jpg">
-      <Name>metal-background</Name>
+    <Compile Include="background.png">
+      <Name>background</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="background.png">
-      <Name>background</Name>
+    <Compile Include="space-dust.png">
+      <Name>space-dust</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="space.jpg">
+      <Name>space</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="cube.fbx">
+      <Name>cube</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="textures\CargoCube01.jpg">
+      <Name>CargoCube01</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
