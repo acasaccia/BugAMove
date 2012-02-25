@@ -46,25 +46,26 @@ namespace PuzzleBobbleInputHandling
 
                         prevLeftHandY = leftHand.Y;
 
-                        float diff = rightHand.X - centerShoulder.X;
+                        float diff = rightHand.X - (centerShoulder.X + 0.25f);
 
-                        if (Math.Abs(diff) > minimumMovement)
-                        {
-                            if (diff > 0)
-                            {
-                                this.kinectMovement = Movement.RIGHT;
-                            }
-                            else
-                            {
-                                this.kinectMovement = Movement.LEFT;
-                            }
-                        }
-                        else
-                        {
-                            this.kinectMovement = Movement.IDLE;
-                        }
+                        this.kinectMovement = CircularGesture.getMovementFromPosition(centerShoulder.X , centerShoulder.Y , rightHand.X, rightHand.Y);
+                        //if (Math.Abs(diff) > minimumMovement)
+                        //{
+                        //    if (diff > 0)
+                        //    {
+                        //        this.kinectMovement = Movement.RIGHT;
+                        //    }
+                        //    else
+                        //    {
+                        //        this.kinectMovement = Movement.LEFT;
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    this.kinectMovement = Movement.IDLE;
+                        //}
 #if DEBUG
-                        Console.WriteLine(rightHand.X);
+              //          Console.WriteLine(rightHand.X);
 #endif
                         skelFrame.Dispose();
                         return;
