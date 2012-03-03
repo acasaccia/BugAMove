@@ -48,8 +48,10 @@ namespace PuzzleBobbleInputHandling
 
                         float diff = rightHand.X - (centerShoulder.X + 0.25f);
 
-                        this.kinectMovement = CircularGesture.getMovementFromPosition(centerShoulder.X , centerShoulder.Y , rightHand.X, rightHand.Y);
-                        //if (Math.Abs(diff) > minimumMovement)
+                        this.kinectMovement = HorizontalGesture.getMovementFromPosition(centerShoulder.X, centerShoulder.Y, rightHand.X, rightHand.Y);                            
+                            // CircularGesture.getMovementFromPosition(centerShoulder.X , centerShoulder.Y , rightHand.X, rightHand.Y);
+                        
+                            //if (Math.Abs(diff) > minimumMovement)
                         //{
                         //    if (diff > 0)
                         //    {
