@@ -43,12 +43,20 @@ namespace PuzzleBobbleInputHandling
         {
             prev = curr;
 
+            System.Console.WriteLine("---------------------" );
+            System.Console.WriteLine("prev " + curr);
             curr = getCurrentQuadrant(originX, originY, positionX, positionY);
+            System.Console.WriteLine("curr " + curr);
 
+            if (curr == 0 && prev == 3) {
+                return KinectManager.Movement.RIGHT;
+            }else if (curr ==3 && prev ==0){
+                return KinectManager.Movement.LEFT;
+            }else
             if (curr - prev > 0) {
                 return KinectManager.Movement.RIGHT;
-            }
-            if (curr - prev > 0)
+            }else
+            if (curr - prev < 0)
             {
                 return KinectManager.Movement.LEFT;
             }

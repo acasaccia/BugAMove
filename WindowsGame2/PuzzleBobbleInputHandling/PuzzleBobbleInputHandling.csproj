@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularGesture.cs" />
+    <Compile Include="HorizontalGesture.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="KinectManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
