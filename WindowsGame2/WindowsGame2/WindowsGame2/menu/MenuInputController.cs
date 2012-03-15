@@ -23,14 +23,12 @@ namespace WindowsGame2.menu
         public event Action<MenuTraverser.Actions> menuAction;
         public event Action<MenuTraverser.Actions, Point> cursorAction;
         public event Action menuClosed;
-        //public event EventHandler<EventArgs> actionPerformed;
+     
         private bool running;
         private KeyboardState prev_kb = new KeyboardState();
         private GamePadState prev_gamepad = new GamePadState();
 
-        private SpriteBatch spriteBatch;
-        //mouse
-        //private Texture2D cursorTexture;
+     
         private bool mouseInputEnabled;
         Point currMouseCoord;
         Point prevMouseCoord;
@@ -81,8 +79,13 @@ namespace WindowsGame2.menu
                 currMouseCoord.Y = mouseState.Y;
 
                 //TODO: check if button is pressed
-                ButtonState leftButtonState = mouseState.LeftButton;
-                
+                if (menuAction != null)
+                {
+                    if (mouseState.LeftButton == ButtonState.Pressed)
+                        menuAction(MenuTraverser.Actions.ACTION_PERFORMED);
+                    else if (mouseState.RightButton == ButtonState.Pressed)
+                        menuAction(MenuTraverser.Actions.MOVE_BACKWARD);
+                }
                 if (prevMouseCoord != currMouseCoord)
                     cursorAction(MenuTraverser.Actions.MOUSE_MOVED, currMouseCoord);
             }
