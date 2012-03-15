@@ -95,41 +95,48 @@ namespace WindowsGame2.menu
 
             }
         }
-        public void forward() {
+        private void goForward() {
+
             MenuComponentComposite t = this.currentSelectedComponent;
+
+            MenuComponentComposite c = this.currentSelectedComponent.getChild(0);
+
+            MenuComponentComposite containerChild = this.currentSelectedComponent;
+            containerChild.setExpanded(true);
+            // containerChild.setBounds(this.currentSelectedComponent.getFather().getBounds());
+            MenuComponentComposite father = this.currentSelectedComponent.getFather();
+            father.setExpanded(false);
+
+            if (c != null)
+            {
+                //current component is a container..can go forward
+                //if (c != this.menu)
+                this.currentSelectedComponent.setFocus(false);
+
+                //  Console.WriteLine("container child " + containerChild.); 
+
+                //close the previousopen container 
+
+
+
+
+                this.componentsTraversedIndexes.Push(this.currentComponentIndex);
+                this.currentSelectedComponent = c;
+                this.currentComponentIndex = 0;
+                this.currentSelectedComponent.setFocus(true);
+
+            }
+            else
+            {
+                //  this.currentSelectedComponent.setFocus(false);
+            }
+        
+        }
+        public void forward() {
+         //   MenuComponentComposite t = this.currentSelectedComponent;
             try
             {
-                MenuComponentComposite c = this.currentSelectedComponent.getChild(0);
-
-                MenuComponentComposite containerChild = this.currentSelectedComponent;
-                containerChild.setExpanded(true);
-               // containerChild.setBounds(this.currentSelectedComponent.getFather().getBounds());
-                MenuComponentComposite father = this.currentSelectedComponent.getFather();
-                father.setExpanded(false);
-              
-                if (c != null)
-                {
-                    //current component is a container..can go forward
-                    //if (c != this.menu)
-                    this.currentSelectedComponent.setFocus(false);
-
-                    //  Console.WriteLine("container child " + containerChild.); 
-                    
-                    //close the previousopen container 
-
-
-
-
-                    this.componentsTraversedIndexes.Push(this.currentComponentIndex);
-                    this.currentSelectedComponent = c;
-                    this.currentComponentIndex = 0;
-                    this.currentSelectedComponent.setFocus(true);
-                    
-                }
-                else {
-                  //  this.currentSelectedComponent.setFocus(false);
-                }
-                
+                goForward();
                 
             }
             catch (NoChildException e)
@@ -187,10 +194,11 @@ namespace WindowsGame2.menu
                         var bounds = currentSelectedComponent.getBounds();
                         if (coord.X >= bounds.X && coord.X <= bounds.X + bounds.Width) { 
             
-                            if (coord.Y < bounds.Y){
+                            if (coord.Y < bounds.Y && this.currentComponentIndex > 0){
                                 this.up();
                             }
-                            else if (coord.Y > bounds.Y + bounds.Height) {
+                            else if (coord.Y > bounds.Y + bounds.Height && 
+                                this.currentComponentIndex < this.currentSelectedComponent.getFather().getChildNum() - 1) {
                                 this.down();
                             }
           
@@ -221,7 +229,16 @@ namespace WindowsGame2.menu
                     this.back();
                     break;
                 case Actions.ACTION_PERFORMED:
-                    this.currentSelectedComponent.OnActionPeformed();
+                    try
+                    {
+                        goForward();
+
+                    }
+                    catch (NoChildException e)
+                    {
+                      this.currentSelectedComponent.OnActionPeformed();
+        
+                    }
                     break;
                  
                 
