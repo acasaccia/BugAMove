@@ -62,6 +62,7 @@ namespace WindowsGame2
             //Dictionary<string, PuzzleBobble.ColorCounter> d = PuzzleBobble.game_state.LevelStatus.AvailableColors.Value;
             
             spriteBatch.End();
+            base.Draw(gameTime);
         }
 
         //public Casanova.Variable<Microsoft.FSharp.Collections.FSharpMap<string, PuzzleBobble.ColorCounter>> c { get; set; }
