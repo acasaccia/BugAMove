@@ -16,6 +16,7 @@ namespace WindowsGame2.menu
         private SpriteFont font;
         private RootMenuItem root;
         private Texture2D menuListBackground;
+       
         public MenuEntryChoice resume, exit, save;
         private MenuTraverser traverser;
         Game1 game;
@@ -86,7 +87,8 @@ namespace WindowsGame2.menu
             GraphicsDevice.Clear(Color.Black);
             this.spriteBatch.Begin();
             root.paintComponent(this.spriteBatch);
-            //  this.spriteBatch.DrawString(this.font, "hello world", new Vector2(0, 0), Color.Red, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
+
+         //   this.spriteBatch.Draw(this.cursorTexture, new Rectangle(mouseX, mouseY, this.cursorTexture.Width, this.cursorTexture.Height), Color.White);
             this.spriteBatch.End();
             base.Draw(gameTime);
         }

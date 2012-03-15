@@ -17,7 +17,9 @@ using PuzzleBobbleInputHandling;
 namespace WindowsGame2
 {
 
-    public interface IMenuService { }
+    public interface IMenuService {
+        MenuTraverser getMenuTraverser();
+    }
   /// <summary>
   /// This is a game component that implements IUpdateable.
   /// </summary>
@@ -26,6 +28,7 @@ namespace WindowsGame2
       private SpriteFont font;
       private Texture2D menuBackground;
       private Texture2D menuListBackground, scoreBackground;
+      private Texture2D cursorTexture;
 
       private SoundEffect backgroundSong;
     
@@ -88,7 +91,9 @@ namespace WindowsGame2
 
         
     }
-
+    public MenuTraverser getMenuTraverser() {
+        return this.traverser;
+    }
     private void LoadGame()
     {
         
@@ -97,15 +102,14 @@ namespace WindowsGame2
     }
     public override void Initialize()
     {
+        System.Console.WriteLine("Menu:Initialize");
         this.traverser = new MenuTraverser(this.root);
-        menuInputController = Game.Services.GetService(typeof(IMenuInputService)) as IMenuInputService;//new MenuInputController(game);
-        menuInputController.menuAction += this.traverser.OnMenuAction;//(MenuTraverser.Actions action) => this.traverser.OnMenuAction(action);
-        //menuInputController.menuAction += this.traverser.OnMenuActionCachedHandler ;
-
+        menuInputController = Game.Services.GetService(typeof(IMenuInputService)) as IMenuInputService;
+        menuInputController.menuAction += this.traverser.OnMenuAction;
+        menuInputController.cursorAction += this.traverser.onCursorAction;
         menuInputController.start();
 
         this.gameLogic = Game.Services.GetService(typeof(IGameLogicService)) as IGameLogicService;
-       // menuInputController.menuClosed += OnMenuClose;
         this.renderer = Game.Services.GetService(typeof(IRendering3DService)) as IRendering3DService;
         base.Initialize();
         spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -117,7 +121,8 @@ namespace WindowsGame2
         Game.Services.RemoveService(typeof(IMenuService));
 
         this.menuInputController.menuAction -= this.traverser.OnMenuAction;//(action);//(MenuTraverser.Actions action) => this.traverser.OnMenuAction(action);
-       // menuInputController.menuAction -= this.traverser.OnMenuActionCachedHandler;    
+        this.menuInputController.cursorAction -= this.traverser.onCursorAction;
+        // menuInputController.menuAction -= this.traverser.OnMenuActionCachedHandler;    
         //if (Game.Services.GetService(typeof(IMenuService)) != null)
         //    Console.WriteLine("IMenuService not removed");
         //else
@@ -130,19 +135,8 @@ namespace WindowsGame2
     }
     protected override void LoadContent()
     {
-        
 
-
-       
-
-      //  menuInputController = new MenuInputController(game);
-      //  menuInputController.menuAction += (MenuTraverser.Actions action) => this.traverser.OnMenuAction(action);
-      //  menuInputController.menuClosed += OnMenuClose;
-        
-       // game.Components.Add(menuInputController);
-    
-     //   game.Services.AddService(typeof(MenuInputController), menuInputController);
-
+        this.cursorTexture = Game.Content.Load<Texture2D>("mouse_cursor_32_32");
         this.backgroundSong = game.Content.Load<SoundEffect>("Sounds/wind_sound");
         this.backgroundSongInstace = this.backgroundSong.CreateInstance();
         this.backgroundSongInstace.IsLooped = true;
@@ -180,62 +174,22 @@ namespace WindowsGame2
     }
     public void OnMenuClose() {
         Console.WriteLine("Menu: OnMenuClosed");
-        //while (Game.Components.Count > 0)
-        //{
-        //    ((GameComponent)Game.Components[0]).Dispose();
-        //}
-
-        //Game.Components.Clear();
-
-        //if (this.gameLogic == null)
-        //    this.gameLogic = new GameLogic(game);
-        //if (this.renderer == null)
-        //    this.renderer = new Rendering(game);
-
-
-        //game.Services.AddService(typeof(ICameraActions), new InputController(this.game));
-        // this.game.Services.AddService(typeof(ICameraActions), );
         GameLogicInputController inputController = new GameLogicInputController(this.game);
         InputManager inputManager = new InputManager(game);
         game.Components.Add(inputManager);
 
         game.Components.Add(inputController);
-     //   game.Services.AddService(typeof(ICameraInputService), inputController);
-   //     Game.Components.Add(this.gameLogic);
-       // Game.Components.Add(this.renderer);
-
+ 
     
     }
-    //public override void Update(GameTime gameTime)
-    //{
-
-    //    if (Keyboard.GetState().IsKeyDown(Keys.A))
-    //    {
-    //        while (Game.Components.Count > 0)
-    //        {
-    //            ((GameComponent)Game.Components[0]).Dispose();
-    //        }
-
-    //        Game.Components.Clear();
-
-    //        //game.Services.AddService(typeof(ICameraActions), new InputController(this.game));
-    //       // this.game.Services.AddService(typeof(ICameraActions), );
-    //       InputController inputController = new InputController(this.game);
-    //        game.Components.Add(inputController);
-    //        game.Services.AddService(typeof(ICameraActions), inputController);
-    //        Game.Components.Add(new GameLogic(Game));
-    //        Game.Components.Add(new Rendering(Game));
-
-    //    }
-
-    //    base.Update(gameTime);
-    //}
-
+ 
     public override void Draw(GameTime gameTime)
     {
-      GraphicsDevice.Clear(Color.Black);
+    //  GraphicsDevice.Clear(Color.Black);
       this.spriteBatch.Begin();
-      root.paintComponent(this.spriteBatch);
+        root.paintComponent(this.spriteBatch);
+        Point currMouseCoord = this.menuInputController.currentMouseCoord();
+        this.spriteBatch.Draw(this.cursorTexture, new Rectangle(currMouseCoord.X, currMouseCoord.Y, this.cursorTexture.Width, this.cursorTexture.Height), Color.White);
     //  this.spriteBatch.DrawString(this.font, "hello world", new Vector2(0, 0), Color.Red, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
       this.spriteBatch.End();
       base.Draw(gameTime);

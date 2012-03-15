@@ -109,7 +109,6 @@ namespace WindowsGame2
             this.gameMenu.Dispose();
         this.gameMenu = null;
         this.Initialize();
-    //    this.Dispose();
         Menu menu = new Menu(this.game);
         Game.Components.Add(menu);
        // Game.Services.RemoveService(typeof(IGameLogicService));

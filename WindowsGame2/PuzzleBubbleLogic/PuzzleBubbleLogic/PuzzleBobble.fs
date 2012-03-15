@@ -744,13 +744,6 @@ let private main () =
                 game_state.SoundOn := not <| !game_state.SoundOn
             return ()
         }
-//    let roof_down() =
-//        co{
-//            do! wait 15.0
-//         //   MoveDownGrid(game_state)
-//          //  game_state.DockedBalls := MoveDownDockedBalls(!game_state.DockedBalls, 0.4f<m>)
-//            return ()
-//        }
     let shoot_ball() =
         co{
             do! yield_

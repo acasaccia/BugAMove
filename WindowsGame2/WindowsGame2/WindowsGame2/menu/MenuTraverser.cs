@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WindowsGame2.Sound;
+using Microsoft.Xna.Framework;
 
 namespace WindowsGame2.menu
 {
@@ -13,7 +14,7 @@ namespace WindowsGame2.menu
         Stack<int> componentsTraversedIndexes;
 
       //  public Action<MenuTraverser.Actions> OnMenuActionCachedHandler; 
-        public enum Actions { MOVE_FORWARD, MOVE_BACKWARD, MOVE_UP, MOVE_DOWN, ACTION_PERFORMED }
+        public enum Actions { MOVE_FORWARD, MOVE_BACKWARD, MOVE_UP, MOVE_DOWN, ACTION_PERFORMED, MOUSE_MOVED }
         int currentComponentIndex;
         public MenuTraverser(RootMenuItem menu)
         {
@@ -175,7 +176,23 @@ namespace WindowsGame2.menu
                 }
             }
         }
+        public void onCursorAction(Actions action, Point coord)
+        {
+            Console.WriteLine("MenuTraverser: onCursorAction");
 
+            var bounds = currentSelectedComponent.getBounds();
+            if (coord.X >= bounds.X && coord.X <= bounds.X + bounds.Width) { 
+            
+                if (coord.Y < bounds.Y){
+                    this.up();
+                }
+                else if (coord.Y > bounds.Y + bounds.Height) {
+                    this.down();
+                }
+          
+            } 
+            
+        }
         public void OnMenuAction(Actions action) {
           //  Console.WriteLine("MenuTraverser OnMenuAction");
             switch (action)
@@ -195,6 +212,8 @@ namespace WindowsGame2.menu
                 case Actions.ACTION_PERFORMED:
                     this.currentSelectedComponent.OnActionPeformed();
                     break;
+                 
+                
             }
         }
     }

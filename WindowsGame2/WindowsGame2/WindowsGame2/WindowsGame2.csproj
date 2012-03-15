@@ -195,7 +195,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="menu\core\" />
-    <Folder Include="NewFolder1\" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

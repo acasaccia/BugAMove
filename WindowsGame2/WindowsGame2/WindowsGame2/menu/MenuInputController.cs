@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace WindowsGame2.menu
 {
@@ -12,20 +13,42 @@ namespace WindowsGame2.menu
         void pause();
         void start();
         event Action<MenuTraverser.Actions> menuAction;
+        event Action<MenuTraverser.Actions, Point> cursorAction;
+        Point currentMouseCoord();
+        bool isMouseInputEnabled();
     }
     class MenuInputController  : GameComponent, IMenuInputService
     {
        
         public event Action<MenuTraverser.Actions> menuAction;
+        public event Action<MenuTraverser.Actions, Point> cursorAction;
         public event Action menuClosed;
         //public event EventHandler<EventArgs> actionPerformed;
         private bool running;
         private KeyboardState prev_kb = new KeyboardState();
         private GamePadState prev_gamepad = new GamePadState();
+
+        private SpriteBatch spriteBatch;
+        //mouse
+        //private Texture2D cursorTexture;
+        private bool mouseInputEnabled;
+        Point currMouseCoord;
+        Point prevMouseCoord;
+
+        private MouseState mouseState;
+
+        public  Point currentMouseCoord() {
+            return currMouseCoord;
+        }
+        public  bool isMouseInputEnabled()
+        {
+            return mouseInputEnabled;
+        }
         public void pause()
         {
             this.running = false;
         }
+      
         public void start() {
             this.running = true;
         }
@@ -34,6 +57,7 @@ namespace WindowsGame2.menu
         {
             this.pause();
             //this.cachedHandler
+            this.mouseInputEnabled = true;
             Game.Services.AddService(typeof(IMenuInputService), this);
         }
         protected override void Dispose(bool disposing)
@@ -45,9 +69,27 @@ namespace WindowsGame2.menu
         {
             if (!this.running)
                 return;
-         //   Console.WriteLine("MenuInputController: Update");
+           
+            //------------- MOUSE HANDLER ----------------------------
+         
+            if (mouseInputEnabled && cursorAction != null) {
+                mouseState = Mouse.GetState();
+
+                prevMouseCoord = currMouseCoord;
+
+                currMouseCoord.X = mouseState.X;
+                currMouseCoord.Y = mouseState.Y;
+
+                //TODO: check if button is pressed
+                ButtonState leftButtonState = mouseState.LeftButton;
+                
+                if (prevMouseCoord != currMouseCoord)
+                    cursorAction(MenuTraverser.Actions.MOUSE_MOVED, currMouseCoord);
+            }
+
+            //------------- KEYBOARD HANDLER ----------------------------
             var state = Keyboard.GetState();
-            //PuzzleBobbleSoundManager m;
+          
             if (menuAction != null) {
 
                 
@@ -63,6 +105,8 @@ namespace WindowsGame2.menu
                 if (state.IsKeyUp(Keys.Enter) && prev_kb.IsKeyDown(Keys.Enter))
                     menuAction(MenuTraverser.Actions.ACTION_PERFORMED);
 
+                //------------- GAMEPAD HANDLER ----------------------------
+          
                 var gamePadState = GamePad.GetState(PlayerIndex.One);
                 if (gamePadState != null) {
                     if (gamePadState.IsButtonUp(Buttons.DPadDown) && prev_gamepad.IsButtonDown(Buttons.DPadDown))
@@ -89,5 +133,12 @@ namespace WindowsGame2.menu
 
             base.Update(gameTime);
         }
+        public override void Initialize()
+        {
+            base.Initialize();
+            System.Console.WriteLine("MenuInputController:Initialize");
+          //  spriteBatch = new SpriteBatch(GraphicsDevice);
+        }
+        
     }
 }
