@@ -18,6 +18,7 @@ namespace WindowsGame2.menu
         void removeChildComponent(MenuComponentComposite c);
         MenuComponentComposite removeChildComponent(int index);
         MenuComponentComposite getChild(int index);
+        int getChildNum();
         MenuComponentComposite getFather();
         IList<MenuComponentComposite> getAllChildren();
         void setFather(MenuComponentComposite father);
@@ -103,6 +104,7 @@ namespace WindowsGame2.menu
         }
 
         public abstract MenuComponentComposite getChild(int index);
+        public abstract int getChildNum();
         public abstract void removeChildComponent(MenuComponentComposite c);
         public abstract MenuComponentComposite removeChildComponent(int index);
         public abstract void addChildComponent(MenuComponentComposite c);
@@ -113,7 +115,10 @@ namespace WindowsGame2.menu
     }
     public abstract class MenuComponentLeaf : AbstractComponent
     {
-       
+        override public int getChildNum() 
+        {
+            return 0;
+        }
         override public void addChildComponent(MenuComponentComposite c)
         {
             throw new NoChildException();
@@ -143,7 +148,11 @@ namespace WindowsGame2.menu
 
         protected IList<MenuComponentComposite> children;
        // protected  MenuComponentComposite father;
-       
+
+        override public int getChildNum()
+        {
+            return this.children.Count;
+        }
         public MenuComponentContainer() {
             this.children = new List<MenuComponentComposite>();
             this.father = null;
