@@ -68,9 +68,27 @@ namespace WindowsGame2.menu
             if (!this.running)
                 return;
            
-            //------------- MOUSE HANDLER ----------------------------
-         
-            if (mouseInputEnabled && cursorAction != null) {
+            //------------- KINECT HANDLER ----------------------------
+
+            if ( PuzzleBobbleInputHandling.KinectManager.getInstance().isTracking() )
+            {
+                prevMouseCoord = currMouseCoord;
+
+                currMouseCoord = this.convertKinectCoordsToViewport( PuzzleBobbleInputHandling.KinectManager.getInstance().getRightHandPosition() );
+
+                //Console.WriteLine("-----------");
+                //Console.WriteLine(rh.X);
+                //Console.WriteLine(rh.Y);
+
+                if (prevMouseCoord != currMouseCoord)
+                    cursorAction(MenuTraverser.Actions.MOUSE_MOVED, currMouseCoord);
+
+            }
+            else if (mouseInputEnabled && cursorAction != null)
+            {
+
+                //------------- MOUSE HANDLER ----------------------------
+
                 mouseState = Mouse.GetState();
 
                 prevMouseCoord = currMouseCoord;
@@ -86,9 +104,12 @@ namespace WindowsGame2.menu
                     else if (mouseState.RightButton == ButtonState.Pressed)
                         menuAction(MenuTraverser.Actions.MOVE_BACKWARD);
                 }
+
                 if (prevMouseCoord != currMouseCoord)
                     cursorAction(MenuTraverser.Actions.MOUSE_MOVED, currMouseCoord);
+
             }
+
 
             //------------- KEYBOARD HANDLER ----------------------------
             var state = Keyboard.GetState();
@@ -135,6 +156,14 @@ namespace WindowsGame2.menu
             prev_kb = state;
 
             base.Update(gameTime);
+        }
+
+        private Point convertKinectCoordsToViewport(Vector2 vector2)
+        {
+            Point point;
+            point.X = (int)((vector2.X + 1.0f) / 2.0f * this.Game.GraphicsDevice.Viewport.Width);
+            point.Y = this.Game.GraphicsDevice.Viewport.Height - (int)((vector2.Y + 1.0f) / 2.0f * this.Game.GraphicsDevice.Viewport.Height);
+            return point;
         }
         public override void Initialize()
         {
