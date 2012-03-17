@@ -35,6 +35,8 @@ namespace WindowsGame2.menu
         string getName();
         void paintComponent(SpriteBatch spriteBatch);
 
+        SpriteFont getFont();
+        
         void OnActionPeformed();
         
     }
@@ -103,6 +105,10 @@ namespace WindowsGame2.menu
             this.font = font;
         }
 
+        public SpriteFont getFont()
+        {
+            return this.font;
+        }
         public abstract MenuComponentComposite getChild(int index);
         public abstract int getChildNum();
         public abstract void removeChildComponent(MenuComponentComposite c);
@@ -142,6 +148,7 @@ namespace WindowsGame2.menu
         override public  IList<MenuComponentComposite> getAllChildren() {
             throw new NoChildException();
         }
+       
        
     }
     public abstract class MenuComponentContainer : AbstractComponent {
@@ -259,16 +266,16 @@ namespace WindowsGame2.menu
             //    spriteBatch.DrawString(this.font, this.title, new Vector2(this.bounds.X, this.bounds.Y),
               //          c, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
             }
-            else {
-                if (title != null && this.expanded)
-                {
-                    Vector2 titleDim = this.font.MeasureString(title);
-                    int leftCornerX = (int)(bounds.X + (bounds.Width / 2 - (titleDim.X / 2)));
-                    // Rectangle r = new Rectangle(leftCorner, bounds.Y, (int)titleDim.X, (int)titleDim.Y);
-                    //Console.WriteLine("expanded list: title " + this.title);
-                    spriteBatch.DrawString(this.font, this.title, new Vector2(leftCornerX, this.bounds.Y), this.color, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
-                }
-            }
+           // else {
+           //     if (title != null && this.expanded)
+           //     {
+           //         Vector2 titleDim = this.font.MeasureString(title);
+           //         int leftCornerX = (int)(bounds.X + (bounds.Width / 2 - (titleDim.X / 2)));
+           //         // Rectangle r = new Rectangle(leftCorner, bounds.Y, (int)titleDim.X, (int)titleDim.Y);
+           //         //Console.WriteLine("expanded list: title " + this.title);
+           ////         spriteBatch.DrawString(this.font, this.title, new Vector2(leftCornerX, this.bounds.Y), this.color, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
+           //     }
+           // }
         }
     }
     public class VerticalListMenuContainer : MenuComponentContainer{
@@ -311,9 +318,11 @@ namespace WindowsGame2.menu
         }
         override public void addChildComponent(MenuComponentComposite c) {
          //   Console.WriteLine("list add child component " + this.children.Count);
-
+            //var name = c.getName();
+            //float W = this.font.MeasureString(name).X;
             Rectangle b = new Rectangle(this.leftMargin, this.firstChildDeltaY + this.bounds.Y + (this.childHeight * this.children.Count),
                 this.bounds.Width - this.leftMargin, this.childHeight);
+              //  this.bounds.Width - t, this.childHeight);
             c.setBounds(b);
             c.setExpandedBounds(this.expandedBounds);
             base.addChildComponent(c);
@@ -398,7 +407,9 @@ namespace WindowsGame2.menu
             int y = (this.bounds.Height * this.childDeltaY) / 100;
 
 
-            Rectangle childBounds = new Rectangle(this.bounds.X + x, this.bounds.Y + y, this.bounds.Width - x *2, this.bounds.Height - y *2);
+            Rectangle childBounds = new Rectangle(this.bounds.X + x, this.bounds.Y + y,
+                //this.bounds.Width - x *2, this.bounds.Height - y *2);
+                this.bounds.Width , this.bounds.Height - y * 2);
             c.setBounds(childBounds);
             c.setExpandedBounds(this.bounds);
             base.addChildComponent(c);
