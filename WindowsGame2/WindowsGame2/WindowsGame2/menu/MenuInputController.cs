@@ -14,6 +14,7 @@ namespace WindowsGame2.menu
         void start();
         event Action<MenuTraverser.Actions> menuAction;
         event Action<MenuTraverser.Actions, Point> cursorAction;
+        event Action<MenuTraverser.Actions, Point, float> kinectAction;
         Point currentMouseCoord();
         bool isMouseInputEnabled();
     }
@@ -22,6 +23,7 @@ namespace WindowsGame2.menu
        
         public event Action<MenuTraverser.Actions> menuAction;
         public event Action<MenuTraverser.Actions, Point> cursorAction;
+        public event Action<MenuTraverser.Actions, Point, float> kinectAction;
         public event Action menuClosed;
      
         private bool running;
@@ -80,8 +82,7 @@ namespace WindowsGame2.menu
                 //Console.WriteLine(rh.X);
                 //Console.WriteLine(rh.Y);
 
-                if (prevMouseCoord != currMouseCoord)
-                    cursorAction(MenuTraverser.Actions.MOUSE_MOVED, currMouseCoord);
+                kinectAction(MenuTraverser.Actions.KINECT_HOVERING, currMouseCoord, (float)gameTime.ElapsedGameTime.TotalSeconds);
 
             }
             else if (mouseInputEnabled && cursorAction != null)
@@ -105,7 +106,8 @@ namespace WindowsGame2.menu
                         menuAction(MenuTraverser.Actions.MOVE_BACKWARD);
                 }
 
-                if (prevMouseCoord != currMouseCoord)
+                //if (prevMouseCoord != currMouseCoord)
+                if (cursorAction != null)
                     cursorAction(MenuTraverser.Actions.MOUSE_MOVED, currMouseCoord);
 
             }

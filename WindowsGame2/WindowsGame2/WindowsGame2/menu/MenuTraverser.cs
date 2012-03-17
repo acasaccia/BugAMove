@@ -14,8 +14,12 @@ namespace WindowsGame2.menu
         Stack<int> componentsTraversedIndexes;
 
       //  public Action<MenuTraverser.Actions> OnMenuActionCachedHandler; 
-        public enum Actions { MOVE_FORWARD, MOVE_BACKWARD, MOVE_UP, MOVE_DOWN, ACTION_PERFORMED, MOUSE_MOVED, MOUSE_CLICKED }
+        public enum Actions { MOVE_FORWARD, MOVE_BACKWARD, MOVE_UP, MOVE_DOWN, ACTION_PERFORMED, MOUSE_MOVED, MOUSE_CLICKED, KINECT_HOVERING }
         int currentComponentIndex;
+
+        private float hoverTime = 0.0f;
+        private float hoverTimeThreshold = 5.0f;
+
         public MenuTraverser(RootMenuItem menu)
         {
             this.menu = menu;
@@ -185,13 +189,12 @@ namespace WindowsGame2.menu
         }
         public void onCursorAction(Actions action, Point coord)
         {
-            Console.WriteLine("MenuTraverser: onCursorAction");
-
+            //Console.WriteLine("MenuTraverser: onCursorAction");
+            var bounds = currentSelectedComponent.getBounds();
             switch (action)
             {
             
                 case Actions.MOUSE_MOVED:
-                        var bounds = currentSelectedComponent.getBounds();
                         if (coord.X >= bounds.X && coord.X <= bounds.X + bounds.Width) { 
             
                             if (coord.Y < bounds.Y && this.currentComponentIndex > 0){
@@ -205,6 +208,11 @@ namespace WindowsGame2.menu
                         }
                         break;
                 case Actions.MOUSE_CLICKED:
+                    break;
+                case Actions.KINECT_HOVERING:
+                    if (!(coord.X >= bounds.X && coord.X <= bounds.X + bounds.Width)) { 
+                        // @todo
+                    }
                     break;
                 default:
                     break;
