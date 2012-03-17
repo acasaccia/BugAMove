@@ -17,8 +17,10 @@ namespace WindowsGame2.menu
         public enum Actions { MOVE_FORWARD, MOVE_BACKWARD, MOVE_UP, MOVE_DOWN, ACTION_PERFORMED, MOUSE_MOVED, MOUSE_CLICKED, KINECT_HOVERING }
         int currentComponentIndex;
 
-        private float hoverTime = 0.0f;
-        private float hoverTimeThreshold = 5.0f;
+        public float hoverTime = 0.0f;
+        public float hoverTimeThreshold = 5.0f;
+
+        
 
         public MenuTraverser(RootMenuItem menu)
         {
@@ -187,6 +189,49 @@ namespace WindowsGame2.menu
                 }
             }
         }
+        public void onKinectAction(Actions action, Point coord, float dt)
+        {
+            var bounds = currentSelectedComponent.getBounds();
+            
+            switch (action)
+            {
+            
+                case Actions.KINECT_HOVERING:
+                    if (hoverTime > hoverTimeThreshold)
+                    {
+                        this.hoverTime = 0;
+                        this.OnMenuAction(Actions.ACTION_PERFORMED);
+                    }
+                    if (coord.Y < bounds.Y && this.currentComponentIndex > 0)
+                    {
+                        this.hoverTime = 0;
+                        this.up();
+                    }
+                    else if (coord.Y > bounds.Y + bounds.Height &&
+                        this.currentComponentIndex < this.currentSelectedComponent.getFather().getChildNum() - 1)
+                    {
+                        this.hoverTime = 0;
+                        this.down();
+                    }
+                    else {
+                        var b = this.currentSelectedComponent.getBounds();
+                        int x = (int)this.currentSelectedComponent.getFont().MeasureString(this.currentSelectedComponent.getName()).X;
+                        if (coord.X > (b.Width / 2) - (x / 2) &&
+                            coord.X < (b.Width / 2) + (x / 2))
+                            this.hoverTime += dt;
+                        else
+                            this.hoverTime = 0;
+                        
+                        //TODO: measure the real length of the component name
+                        float W = this.currentSelectedComponent.getFont().MeasureString(this.currentSelectedComponent.getName()).X;
+                        //
+                       
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
         public void onCursorAction(Actions action, Point coord)
         {
             //Console.WriteLine("MenuTraverser: onCursorAction");
@@ -209,11 +254,7 @@ namespace WindowsGame2.menu
                         break;
                 case Actions.MOUSE_CLICKED:
                     break;
-                case Actions.KINECT_HOVERING:
-                    if (!(coord.X >= bounds.X && coord.X <= bounds.X + bounds.Width)) { 
-                        // @todo
-                    }
-                    break;
+                
                 default:
                     break;
             }

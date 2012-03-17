@@ -28,9 +28,11 @@ namespace WindowsGame2
       private SpriteFont font;
       private Texture2D menuBackground;
       private Texture2D menuListBackground, scoreBackground;
-      private Texture2D cursorTexture0, cursorTexture1, cursorTexture2, cursorTexture3, cursorTexture4;
 
-      public Texture2D currentCursor;
+      private Texture2D []cursorAnimation;
+
+      
+      public int currentCursorIndex;
 
       private SoundEffect backgroundSong;
     
@@ -52,6 +54,7 @@ namespace WindowsGame2
     {
         Console.WriteLine("Menu Constructor");
         this.game =(Game1) game;
+        this.cursorAnimation = new Texture2D[5];
         //if (Game.Services.GetService(typeof(IMenuService)) != null)
         //    Console.WriteLine("IMenuService already exist...BUG");
         Game.Services.AddService(typeof(IMenuService) ,this);
@@ -109,6 +112,7 @@ namespace WindowsGame2
         menuInputController = Game.Services.GetService(typeof(IMenuInputService)) as IMenuInputService;
         menuInputController.menuAction += this.traverser.OnMenuAction;
         menuInputController.cursorAction += this.traverser.onCursorAction;
+        menuInputController.kinectAction += this.traverser.onKinectAction;
         menuInputController.start();
 
         this.gameLogic = Game.Services.GetService(typeof(IGameLogicService)) as IGameLogicService;
@@ -124,6 +128,7 @@ namespace WindowsGame2
 
         this.menuInputController.menuAction -= this.traverser.OnMenuAction;//(action);//(MenuTraverser.Actions action) => this.traverser.OnMenuAction(action);
         this.menuInputController.cursorAction -= this.traverser.onCursorAction;
+        this.menuInputController.kinectAction -= this.traverser.onKinectAction;
         // menuInputController.menuAction -= this.traverser.OnMenuActionCachedHandler;    
         //if (Game.Services.GetService(typeof(IMenuService)) != null)
         //    Console.WriteLine("IMenuService not removed");
@@ -138,13 +143,14 @@ namespace WindowsGame2
     protected override void LoadContent()
     {
 
-        this.cursorTexture1 = Game.Content.Load<Texture2D>("mouse_cursor_1");
-        this.cursorTexture2 = Game.Content.Load<Texture2D>("mouse_cursor_2");
-        this.cursorTexture3 = Game.Content.Load<Texture2D>("mouse_cursor_3");
-        this.cursorTexture4 = Game.Content.Load<Texture2D>("mouse_cursor_4");
-        this.cursorTexture0 = Game.Content.Load<Texture2D>("mouse_cursor_32_32");
+        
+        this.cursorAnimation[1]  = Game.Content.Load<Texture2D>("mouse_cursor_1");
+        this.cursorAnimation[2] = Game.Content.Load<Texture2D>("mouse_cursor_2");
+        this.cursorAnimation[3] = Game.Content.Load<Texture2D>("mouse_cursor_3");
+        this.cursorAnimation[4] = Game.Content.Load<Texture2D>("mouse_cursor_4");
+        this.cursorAnimation[0] = Game.Content.Load<Texture2D>("mouse_cursor_32_32");
 
-        this.currentCursor = this.cursorTexture0;
+        this.currentCursorIndex = 0;// this.cursorAnimation[0];
 
         this.backgroundSong = game.Content.Load<SoundEffect>("Sounds/wind_sound");
         this.backgroundSongInstace = this.backgroundSong.CreateInstance();
@@ -194,11 +200,13 @@ namespace WindowsGame2
  
     public override void Draw(GameTime gameTime)
     {
+        int elapsedTime = (int)( this.traverser.hoverTime) % 5;
+        this.currentCursorIndex = elapsedTime;
     //  GraphicsDevice.Clear(Color.Black);
       this.spriteBatch.Begin();
         root.paintComponent(this.spriteBatch);
         Point currMouseCoord = this.menuInputController.currentMouseCoord();
-        this.spriteBatch.Draw(this.currentCursor, new Rectangle(currMouseCoord.X, currMouseCoord.Y, this.cursorTexture0.Width, this.cursorTexture0.Height), Color.White);
+        this.spriteBatch.Draw(this.cursorAnimation[currentCursorIndex], new Rectangle(currMouseCoord.X, currMouseCoord.Y, this.cursorAnimation[currentCursorIndex].Width, this.cursorAnimation[currentCursorIndex].Height), Color.White);
     //  this.spriteBatch.DrawString(this.font, "hello world", new Vector2(0, 0), Color.Red, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
       this.spriteBatch.End();
       base.Draw(gameTime);
