@@ -28,7 +28,9 @@ namespace WindowsGame2
       private SpriteFont font;
       private Texture2D menuBackground;
       private Texture2D menuListBackground, scoreBackground;
-      private Texture2D cursorTexture;
+      private Texture2D cursorTexture0, cursorTexture1, cursorTexture2, cursorTexture3, cursorTexture4;
+
+      public Texture2D currentCursor;
 
       private SoundEffect backgroundSong;
     
@@ -136,7 +138,14 @@ namespace WindowsGame2
     protected override void LoadContent()
     {
 
-        this.cursorTexture = Game.Content.Load<Texture2D>("mouse_cursor_32_32");
+        this.cursorTexture1 = Game.Content.Load<Texture2D>("mouse_cursor_1");
+        this.cursorTexture2 = Game.Content.Load<Texture2D>("mouse_cursor_2");
+        this.cursorTexture3 = Game.Content.Load<Texture2D>("mouse_cursor_3");
+        this.cursorTexture4 = Game.Content.Load<Texture2D>("mouse_cursor_4");
+        this.cursorTexture0 = Game.Content.Load<Texture2D>("mouse_cursor_32_32");
+
+        this.currentCursor = this.cursorTexture0;
+
         this.backgroundSong = game.Content.Load<SoundEffect>("Sounds/wind_sound");
         this.backgroundSongInstace = this.backgroundSong.CreateInstance();
         this.backgroundSongInstace.IsLooped = true;
@@ -189,7 +198,7 @@ namespace WindowsGame2
       this.spriteBatch.Begin();
         root.paintComponent(this.spriteBatch);
         Point currMouseCoord = this.menuInputController.currentMouseCoord();
-        this.spriteBatch.Draw(this.cursorTexture, new Rectangle(currMouseCoord.X, currMouseCoord.Y, this.cursorTexture.Width, this.cursorTexture.Height), Color.White);
+        this.spriteBatch.Draw(this.currentCursor, new Rectangle(currMouseCoord.X, currMouseCoord.Y, this.cursorTexture0.Width, this.cursorTexture0.Height), Color.White);
     //  this.spriteBatch.DrawString(this.font, "hello world", new Vector2(0, 0), Color.Red, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
       this.spriteBatch.End();
       base.Draw(gameTime);
