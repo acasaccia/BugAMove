@@ -40,6 +40,7 @@ namespace WindowsGame2
       Model gear;
       private Matrix projection;
       public  Camera camera;
+      private Vector3 cameraDefaultPosition;
 
       private bool running;
 
@@ -62,7 +63,8 @@ namespace WindowsGame2
       this.viewPortDimension = new Vector2(this.game.graphics.PreferredBackBufferWidth, this.game.graphics.PreferredBackBufferHeight);
 
       // camera posizione iniziale
-      this.camera = new Camera(new Vector3(BoxBoundingBox.Max.X + PuzzleBobble.BoxDimension.X / 2.0f, 2.7f, 4.9f));
+      this.cameraDefaultPosition = new Vector3(BoxBoundingBox.Max.X + PuzzleBobble.BoxDimension.X / 2.0f, 2.7f, 4.9f);
+      this.camera = new Camera(this.cameraDefaultPosition);
       this.camera.updateViewMatrix();
  
       game.Services.AddService(typeof(Camera), this.camera);
@@ -143,9 +145,9 @@ namespace WindowsGame2
         float mediumGearScaleFactor = 0.02f;
         float bigGearScaleFactor = 0.03f;
         float arrowScaleFactor = 0.008f;
-        this.DrawModel(this.gear, new Vector3(smallGearScaleFactor), new Vector3(distance.X, distance.Y, distance.Z), new Vector3(0.0f, 0.0f, -rotation * 2.0f), null);
-        this.DrawModel(this.gear, new Vector3(bigGearScaleFactor), new Vector3(distance.X + 0.5f, distance.Y - 0.7f, distance.Z + 0.1f), new Vector3(0.0f, 0.0f, -rotation * 0.1f), null);
-        this.DrawModel(this.gear, new Vector3(mediumGearScaleFactor), new Vector3(distance.X - 0.5f, distance.Y - 0.4f, distance.Z + 0.1f), new Vector3(0.0f, 0.0f, rotation * 0.3f), null);
+        this.DrawModel(this.gear, new Vector3(smallGearScaleFactor), new Vector3(distance.X, distance.Y, distance.Z - 0.05f), new Vector3(0.0f, 0.0f, -rotation * 2.0f), null);
+        this.DrawModel(this.gear, new Vector3(bigGearScaleFactor), new Vector3(distance.X + 0.5f, distance.Y - 0.6f, distance.Z + 0.1f), new Vector3(0.0f, 0.0f, -rotation * 0.1f), null);
+        this.DrawModel(this.gear, new Vector3(mediumGearScaleFactor), new Vector3(distance.X - 0.5f, distance.Y - 0.4f, distance.Z + 0.05f), new Vector3(0.0f, 0.0f, rotation * 0.3f), null);
         this.DrawModel(this.arrow, new Vector3(arrowScaleFactor), new Vector3(distance.X, distance.Y, distance.Z), new Vector3(0.0f, 0.0f, rotation), null);
     }
     private void DrawMessage(string message) {
@@ -278,6 +280,9 @@ namespace WindowsGame2
     //BoundingSphere BoxMergedBoundingSphere;
     BoundingBox BoxBoundingBox;
     Texture2D background, background2;
+
+    SoundEffect clockTicking, doorSlam;
+
     //Model skyDome;
     //pillarBox;
     protected override void LoadContent()
@@ -291,7 +296,10 @@ namespace WindowsGame2
       background = Game.Content.Load<Texture2D>("space");
       background2 = Game.Content.Load<Texture2D>("space-dust");
 
-      //     this.world = Game.Content.Load<Model>("RoadSign");
+      doorSlam = Game.Content.Load<SoundEffect>("Sounds/doorSlam");
+      clockTicking = Game.Content.Load<SoundEffect>("Sounds/clockTicking");
+
+      //this.world = Game.Content.Load<Model>("RoadSign");
    
       //this.BoxMergedBoundingSphere = new BoundingSphere();
       //foreach (var mesh in Box.Meshes)
@@ -310,10 +318,37 @@ namespace WindowsGame2
       base.Dispose(disposing);
     }
 
+    int prevStep = 0;
+    bool tickingPlaying = false;
+    Random rnd = new Random();
+    float tremblingOffset = 0.0f;
     public override void Draw(GameTime gameTime)
     {
         if (!this.running)
             return;
+
+        if ((PuzzleBobble.game_state.LevelStatus.ElapsedTime.Value > 0.0f) && (PuzzleBobble.game_state.LevelStatus.ElapsedTime.Value % PuzzleBobble.DefaultRoofStepTimeDelta) > PuzzleBobble.DefaultRoofStepTimeDelta - 5.0f)
+        {
+            if (!tickingPlaying)
+            {
+                tickingPlaying = true;
+                this.clockTicking.Play(1.0f, 0.0f, 0.0f);
+            }
+            tremblingOffset = (float)(rnd.NextDouble() / 75.0f);
+        }
+        else
+        {
+            tickingPlaying = false;
+            tremblingOffset = 0.0f;
+        }
+
+        if (this.prevStep < PuzzleBobble.game_state.GridSteps.Value)
+        {
+            this.doorSlam.Play(0.75f, 0.0f, 0.0f);
+        }
+
+        this.prevStep = PuzzleBobble.game_state.GridSteps.Value;
+
         int h = GraphicsDevice.Viewport.Bounds.Height;
         int w = GraphicsDevice.Viewport.Bounds.Width;
 
@@ -329,7 +364,7 @@ namespace WindowsGame2
                 if (PuzzleBobble.game_state.Grid.Value[i, j] != null)
                 {
 
-                    Vector3 pos = PuzzleBobble.game_state.Grid.Value[i, j].Value.center.toXNAVector;
+                    Vector3 pos = PuzzleBobble.game_state.Grid.Value[i, j].Value.center.toXNAVector + new Vector3(0.0f, tremblingOffset, 0.0f);
                     float scale = PuzzleBobble.game_state.Grid.Value[i, j].Value.radius;
                     Color col = PuzzleBobble.game_state.Grid.Value[i, j].Value.color;
                     this.DrawModel(this.ballMesh, new Vector3 (scale,scale,scale), pos, Vector3.Zero, col);
@@ -378,9 +413,10 @@ namespace WindowsGame2
             this.DrawModel(Box, new Vector3(1.0f, 1.0f, 0.2f), new Vector3(XSIZE / 2.0f + PuzzleBobble.BoxDimension.X + 0.2f, YSIZE + (YSIZE * i), 0.0f), Vector3.Zero, null);
           
         }
-        float roofScaleX = PuzzleBobble.BoxDimension.X / XSIZE;
-        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 0.2f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, 0.0f), Vector3.Zero, null);
-        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 0.2f), new Vector3(XSIZE * roofScaleX / 2.0f, 0.0f - YSIZE, 0.0f), Vector3.Zero, null);
+        float roofScaleX = PuzzleBobble.BoxDimension.X / ( XSIZE + 0.2f );
+        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 0.2f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, 0.0f) + new Vector3(0.2f, tremblingOffset, 0.0f), Vector3.Zero, null);
+        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 0.2f), new Vector3(XSIZE * roofScaleX / 2.0f, PuzzleBobble.BoxDimension.Y + YSIZE - PuzzleBobble.game_state.GridSteps.Value * PuzzleBobble.BallDiameter, 0.0f) + new Vector3(0.2f, tremblingOffset, 0.0f), Vector3.Zero, null);
+        this.DrawModel(Box, new Vector3(roofScaleX, 1.0f, 0.2f), new Vector3(XSIZE * roofScaleX / 2.0f + 0.2f, 0.0f - YSIZE, 0.0f), Vector3.Zero, null);
 
        
         //pretty works 
@@ -393,7 +429,7 @@ namespace WindowsGame2
         
         if (PuzzleBobble.game_state.LevelStatus.Status.Value == PuzzleBobble.GameStatus.Ready)
         {
-            this.DrawMessage("Level Ready Press Enter to start");
+            this.DrawMessage("Enter to start");
         }
         else if (PuzzleBobble.game_state.LevelStatus.Status.Value == PuzzleBobble.GameStatus.Win)
         {
