@@ -80,7 +80,7 @@ namespace PuzzleBobbleInputHandling
                 inputState.ArrowMovedLeft = state.IsKeyDown(Keys.Left) || KinectManager.getInstance().isMovingLeft();
                 inputState.ArrowMovedRight = state.IsKeyDown(Keys.Right) || KinectManager.getInstance().isMovingRight();
                 inputState.BallShoot = state.IsKeyDown(Keys.Space) || KinectManager.getInstance().isShooting();
-                inputState.Continue = state.IsKeyDown(Keys.Enter);
+                inputState.Continue = state.IsKeyDown(Keys.Enter) || KinectManager.getInstance().isContinue();
                 inputState.SoundOn = state.IsKeyDown(Keys.M);
                 inputState.SoundOff = state.IsKeyDown(Keys.M);
             }

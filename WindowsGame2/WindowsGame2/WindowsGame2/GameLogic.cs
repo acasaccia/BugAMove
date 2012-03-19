@@ -64,7 +64,7 @@ namespace WindowsGame2
 
     public bool running;
     private PuzzleBobbleSoundManager soundManager;
-    private IGameLogicInputService cameraInput; //TODO:move this into rendering component
+    private IGameLogicInputService gameLogicInputController; //TODO:move this into rendering component
     private Game1 game;
     private GameMenu gameMenu;
 
@@ -91,31 +91,26 @@ namespace WindowsGame2
             InputManager input = Game.Services.GetService(typeof(InputManager)) as InputManager;
             input.pause();
             Game.Services.RemoveService(typeof(IGameLogicInputService));
-            Game.Components.Remove((GameComponent)this.cameraInput);
+            Game.Components.Remove((GameComponent)this.gameLogicInputController);
         }
         else
             this.start();
     }
 
     public void OnBackToMenu() { 
-     //   Console.WriteLine("GameLogic OnBackToMenu");
-
-     //   Game.Components.Remove(this);
+ 
         Game.Components.Remove(this.gameMenu);
-       // Game.Services.RemoveService(typeof(IGameMenuService));
-  //      cameraInput.changedCamera -= this.OnCameraMoved;//(Camera.CameraTransformations t, float dt) => this.OnCameraMoved(t, dt);
-    //    cameraInput.gamePaused -= this.OnGamePaused;
+ 
         if (this.gameMenu != null)
             this.gameMenu.Dispose();
+        
         this.gameMenu = null;
         this.Initialize();
         Menu menu = new Menu(this.game);
         Game.Components.Add(menu);
-       // Game.Services.RemoveService(typeof(IGameLogicService));
         Camera cam = Game.Services.GetService(typeof(Camera)) as Camera;
         cam.resetCamera();
-        //Game.Services.AddService(IMenuService)
-
+        this.gameLogicInputController.pause();
     }
     public void OnResumeGame() 
     {
@@ -126,8 +121,8 @@ namespace WindowsGame2
         InputManager input = Game.Services.GetService(typeof(InputManager)) as InputManager;
         input.start();
 
-        Game.Components.Add((GameComponent)this.cameraInput);
-        Game.Services.AddService(typeof(IGameLogicInputService), this.cameraInput);
+        Game.Components.Add((GameComponent)this.gameLogicInputController);
+        Game.Services.AddService(typeof(IGameLogicInputService), this.gameLogicInputController);
        
         this.start();
     }
@@ -179,8 +174,8 @@ namespace WindowsGame2
 
     protected override void Dispose(bool disposing)
     {
-        Game.Components.Remove((GameLogicInputController)this.cameraInput);
-        ((GameLogicInputController)this.cameraInput).Dispose();
+        Game.Components.Remove((GameLogicInputController)this.gameLogicInputController);
+        ((GameLogicInputController)this.gameLogicInputController).Dispose();
      // Game.Services.RemoveService(typeof(Ball));
      // Game.Services.RemoveService(typeof(Arrow));
         Game.Components.Remove(this);
@@ -200,15 +195,15 @@ namespace WindowsGame2
     {
       //      Console.WriteLine("GameLogic: Initialize");
 
-      this.cameraInput = Game.Services.GetService(typeof(IGameLogicInputService)) as IGameLogicInputService;
+      this.gameLogicInputController = Game.Services.GetService(typeof(IGameLogicInputService)) as IGameLogicInputService;
       //if (cameraInput != null)
       //{
-      if (this.cameraInput == null) {
-          this.cameraInput = new GameLogicInputController(this.game);
-          Game.Components.Add((GameLogicInputController)this.cameraInput);
+      if (this.gameLogicInputController == null) {
+          this.gameLogicInputController = new GameLogicInputController(this.game);
+          Game.Components.Add((GameLogicInputController)this.gameLogicInputController);
       }
-      cameraInput.changedCamera += this.OnCameraMoved;//(Camera.CameraTransformations t, float dt) => this.OnCameraMoved(t, dt);
-      cameraInput.gamePaused += this.OnGamePaused;
+      gameLogicInputController.changedCamera += this.OnCameraMoved;//(Camera.CameraTransformations t, float dt) => this.OnCameraMoved(t, dt);
+      gameLogicInputController.gamePaused += this.OnGamePaused;
 
       //}
       Game.Exiting += new EventHandler<EventArgs>(Game_Exiting);

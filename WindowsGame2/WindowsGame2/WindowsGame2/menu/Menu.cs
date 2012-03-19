@@ -171,6 +171,9 @@ namespace WindowsGame2
         game.Services.RemoveService(typeof(MenuSoundManager));
         game.Services.RemoveService(typeof(MenuInputController));
 
+        IGameLogicInputService inputController = Game.Services.GetService(typeof(IGameLogicInputService)) as IGameLogicInputService;
+        inputController.start();
+        
         this.menuInputController.pause();
       
         InputManager inputManager = Game.Services.GetService(typeof(InputManager)) as InputManager;
