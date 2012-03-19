@@ -78,6 +78,7 @@ namespace WindowsGame2.menu
                 this.resume.actionPerformed -= gameLogic.OnResumeGame;
                 this.save.actionPerformed -= gameLogic.OnSaveGame;
                 
+                
             }
             Game.Services.RemoveService(typeof(IGameMenuService));
             base.Dispose(disposing);

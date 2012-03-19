@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using PuzzleBobbleInputHandling;
 
 namespace WindowsGame2.menu
 {
@@ -70,13 +71,59 @@ namespace WindowsGame2.menu
             if (!this.running)
                 return;
            
+            
+
+            //------------- KEYBOARD HANDLER ----------------------------
+            var state = Keyboard.GetState();
+           
+            if (menuAction != null) {
+
+                
+              //  Console.WriteLine("not null MenuAction");
+                if (state.IsKeyUp(Keys.Up) && prev_kb.IsKeyDown(Keys.Up))
+                    menuAction(MenuTraverser.Actions.MOVE_UP);
+                if (state.IsKeyUp(Keys.Down) && prev_kb.IsKeyDown(Keys.Down))
+                    menuAction(MenuTraverser.Actions.MOVE_DOWN);
+                if (state.IsKeyUp(Keys.Left) && prev_kb.IsKeyDown(Keys.Left) || KinectManager.getInstance().goBack())
+                    menuAction(MenuTraverser.Actions.MOVE_BACKWARD);
+                if (state.IsKeyUp(Keys.Right) && prev_kb.IsKeyDown(Keys.Right))
+                    menuAction(MenuTraverser.Actions.MOVE_FORWARD);
+                if (state.IsKeyUp(Keys.Enter) && prev_kb.IsKeyDown(Keys.Enter))
+                    menuAction(MenuTraverser.Actions.ACTION_PERFORMED);
+
+                //------------- GAMEPAD HANDLER ----------------------------
+          
+                var gamePadState = GamePad.GetState(PlayerIndex.One);
+                if (gamePadState != null) {
+                    if (gamePadState.IsButtonUp(Buttons.DPadDown) && prev_gamepad.IsButtonDown(Buttons.DPadDown))
+                        menuAction(MenuTraverser.Actions.MOVE_DOWN);
+                    if (gamePadState.IsButtonUp(Buttons.DPadUp) && prev_gamepad.IsButtonDown(Buttons.DPadUp))
+                        menuAction(MenuTraverser.Actions.MOVE_UP);
+                    if (gamePadState.IsButtonUp(Buttons.DPadLeft) && prev_gamepad.IsButtonDown(Buttons.DPadLeft))
+                        menuAction(MenuTraverser.Actions.MOVE_BACKWARD);
+                    if (gamePadState.IsButtonUp(Buttons.DPadRight) && prev_gamepad.IsButtonDown(Buttons.DPadRight))
+                        menuAction(MenuTraverser.Actions.MOVE_FORWARD);
+                    if (gamePadState.IsButtonUp(Buttons.B) && prev_gamepad.IsButtonDown(Buttons.B))
+                        menuAction(MenuTraverser.Actions.ACTION_PERFORMED);
+                    prev_gamepad = gamePadState;
+                }
+                
+            }
+            
+            if (menuClosed != null){
+                if (state.IsKeyUp(Keys.Escape) && prev_kb.IsKeyDown(Keys.Escape))
+                    menuClosed();
+            }
+            
+            prev_kb = state;
+
             //------------- KINECT HANDLER ----------------------------
 
-            if ( PuzzleBobbleInputHandling.KinectManager.getInstance().isTracking() )
+            if (PuzzleBobbleInputHandling.KinectManager.getInstance().isTracking())
             {
                 prevMouseCoord = currMouseCoord;
 
-                currMouseCoord = this.convertKinectCoordsToViewport( PuzzleBobbleInputHandling.KinectManager.getInstance().getRightHandPosition() );
+                currMouseCoord = this.convertKinectCoordsToViewport(PuzzleBobbleInputHandling.KinectManager.getInstance().getRightHandPosition());
 
                 //Console.WriteLine("-----------");
                 //Console.WriteLine(rh.X);
@@ -112,51 +159,6 @@ namespace WindowsGame2.menu
                     cursorAction(MenuTraverser.Actions.MOUSE_MOVED, currMouseCoord);
 
             }
-
-
-            //------------- KEYBOARD HANDLER ----------------------------
-            var state = Keyboard.GetState();
-          
-            if (menuAction != null) {
-
-                
-              //  Console.WriteLine("not null MenuAction");
-                if (state.IsKeyUp(Keys.Up) && prev_kb.IsKeyDown(Keys.Up))
-                    menuAction(MenuTraverser.Actions.MOVE_UP);
-                if (state.IsKeyUp(Keys.Down) && prev_kb.IsKeyDown(Keys.Down))
-                    menuAction(MenuTraverser.Actions.MOVE_DOWN);
-                if (state.IsKeyUp(Keys.Left) && prev_kb.IsKeyDown(Keys.Left))
-                    menuAction(MenuTraverser.Actions.MOVE_BACKWARD);
-                if (state.IsKeyUp(Keys.Right) && prev_kb.IsKeyDown(Keys.Right))
-                    menuAction(MenuTraverser.Actions.MOVE_FORWARD);
-                if (state.IsKeyUp(Keys.Enter) && prev_kb.IsKeyDown(Keys.Enter))
-                    menuAction(MenuTraverser.Actions.ACTION_PERFORMED);
-
-                //------------- GAMEPAD HANDLER ----------------------------
-          
-                var gamePadState = GamePad.GetState(PlayerIndex.One);
-                if (gamePadState != null) {
-                    if (gamePadState.IsButtonUp(Buttons.DPadDown) && prev_gamepad.IsButtonDown(Buttons.DPadDown))
-                        menuAction(MenuTraverser.Actions.MOVE_DOWN);
-                    if (gamePadState.IsButtonUp(Buttons.DPadUp) && prev_gamepad.IsButtonDown(Buttons.DPadUp))
-                        menuAction(MenuTraverser.Actions.MOVE_UP);
-                    if (gamePadState.IsButtonUp(Buttons.DPadLeft) && prev_gamepad.IsButtonDown(Buttons.DPadLeft))
-                        menuAction(MenuTraverser.Actions.MOVE_BACKWARD);
-                    if (gamePadState.IsButtonUp(Buttons.DPadRight) && prev_gamepad.IsButtonDown(Buttons.DPadRight))
-                        menuAction(MenuTraverser.Actions.MOVE_FORWARD);
-                    if (gamePadState.IsButtonUp(Buttons.B) && prev_gamepad.IsButtonDown(Buttons.B))
-                        menuAction(MenuTraverser.Actions.ACTION_PERFORMED);
-                    prev_gamepad = gamePadState;
-                }
-                
-            }
-            
-            if (menuClosed != null){
-                if (state.IsKeyUp(Keys.Escape) && prev_kb.IsKeyDown(Keys.Escape))
-                    menuClosed();
-            }
-            
-            prev_kb = state;
 
             base.Update(gameTime);
         }

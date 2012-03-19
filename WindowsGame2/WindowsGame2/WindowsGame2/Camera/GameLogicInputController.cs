@@ -18,17 +18,25 @@ namespace WindowsGame2
         event Action gamePaused;
         event Action gameResumed;
 
+        void start();
+        void pause();
+
     }
     class GameLogicInputController : GameComponent, IGameLogicInputService
     {
         public event Action<Camera.CameraTransformations, float > changedCamera;
         public event Action gamePaused;
         public event Action gameResumed;
-     
+
+        private bool isRunning;
+
+        public void start() { this.isRunning = true; }
+        public void pause() { this.isRunning = false; }
         //CONSTRUCTOR
         public GameLogicInputController(Game game) : base(game) {
 
             Game.Services.AddService(typeof(IGameLogicInputService), this);
+            this.isRunning = false;
         }
         public override void Initialize()
         {
@@ -45,6 +53,8 @@ namespace WindowsGame2
         GamePadState prev_game_pad_state;
         public override void Update(GameTime gameTime)
         {
+            if (!this.isRunning)
+                return;
            // Console.WriteLine("InputController : Update");
             var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
          //   Console.WriteLine("dt " + dt);
@@ -61,6 +71,7 @@ namespace WindowsGame2
 
             if (this.gamePaused != null) {
                 if (state.IsKeyUp(Keys.P) && prev_kb.IsKeyDown(Keys.P)) {
+
                     this.gamePaused();
                 }
                 else if (KinectManager.getInstance().isPaused())

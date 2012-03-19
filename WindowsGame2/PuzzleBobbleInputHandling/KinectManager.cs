@@ -17,10 +17,12 @@ namespace PuzzleBobbleInputHandling
         private Vector2 leftHandPosition;
         private Vector2 rightHandPosition;
         
-        float pauseDelta = 0.1f;
+        float pauseDelta = 0.05f;
         float shootLeftHandDelta = 0.1f;
 
         private bool kinectPause = false;
+        private bool kinectContinue = false;
+        private bool kinectGoBack = false;
         private bool kinectShoot = false;
         private bool skeletonTracked = false;
         
@@ -57,6 +59,29 @@ namespace PuzzleBobbleInputHandling
                 return true;
             return false;
         }
+        private bool continueGesture(SkeletonPoint centerShoulder, SkeletonPoint head) 
+        {
+            if (centerShoulder.Y < head.Y)
+                return true;
+            return false;
+        }
+        private bool pauseGesturePrayDetect(SkeletonPoint leftHand, SkeletonPoint rightHand, SkeletonPoint centerShoulder,
+            SkeletonPoint leftElbow, SkeletonPoint rightElbow)
+        {
+            if (Math.Abs(rightHand.Y - leftHand.Y) < pauseDelta &&
+                Math.Abs(rightElbow.Y - leftElbow.Y) < pauseDelta &&
+                Math.Abs(rightHand.X - leftHand.X) < pauseDelta)
+            {
+                return true;
+            }
+            return false;
+        }
+        private bool goBackGestureDetect(SkeletonPoint head, SkeletonPoint leftHand)
+        {
+            if (leftHand.Y > head.Y)
+                return true;
+            return false;
+        }
         private bool pauseGestureDetect(SkeletonPoint leftHand, SkeletonPoint rightHand, SkeletonPoint centerShoulder)
         {
             if (Math.Abs(rightHand.X - leftHand.X ) < pauseDelta  &&
@@ -87,7 +112,7 @@ namespace PuzzleBobbleInputHandling
                         SkeletonPoint centerShoulder = skel.Joints[JointType.ShoulderCenter].Position;
                         SkeletonPoint leftHand = skel.Joints[JointType.HandLeft].Position;
                         SkeletonPoint leftShoulder = skel.Joints[JointType.ShoulderLeft].Position;
-                      
+                     // JointType.
                         this.rightHandPosition.X = rightHand.X;
                         this.rightHandPosition.Y = rightHand.Y;
                         this.leftHandPosition.X = leftHand.X;
@@ -98,15 +123,18 @@ namespace PuzzleBobbleInputHandling
                         else
                             this.kinectShoot = false;
                     //    this.kinectShoot =  shootGestureDetect(leftHand, prevLeftHand, leftShoulder);
-
+                        this.kinectContinue = this.continueGesture(rightHand, skel.Joints[JointType.Head].Position);
                         prevLeftHand = leftHand;
                         prevLeftHandY = leftHand.Y;
 
+                        this.kinectGoBack = this.goBackGestureDetect(skel.Joints[JointType.Head].Position, leftHand);
                         float diff = rightHand.X - (centerShoulder.X + 0.25f);
 
                         this.kinectMovement = HorizontalGesture.getMovementFromPosition(centerShoulder.X, centerShoulder.Y, rightHand.X, rightHand.Y);
 
-                        this.kinectPause = this.pauseGestureDetect(leftHand, rightHand, centerShoulder);
+                       // this.kinectPause = this.pauseGestureDetect(leftHand, rightHand, centerShoulder);
+                        this.kinectPause = pauseGesturePrayDetect(leftHand, rightHand, centerShoulder,
+                            skel.Joints[JointType.ElbowLeft].Position, skel.Joints[JointType.ElbowRight].Position);
                         skelFrame.Dispose();
                         return;
                     }
@@ -124,6 +152,15 @@ namespace PuzzleBobbleInputHandling
         public bool isMovingRight()
         {
             return this.kinectMovement == Movement.RIGHT;
+        }
+
+        public bool goBack ()
+        { 
+            return this.kinectGoBack;
+        }
+        public bool isContinue() 
+        {
+            return this.kinectContinue;
         }
         public bool isShooting()
         {
