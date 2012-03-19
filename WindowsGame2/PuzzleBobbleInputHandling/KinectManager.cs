@@ -16,6 +16,11 @@ namespace PuzzleBobbleInputHandling
         private Movement kinectMovement = Movement.IDLE;
         private Vector2 leftHandPosition;
         private Vector2 rightHandPosition;
+        
+        float pauseDelta = 0.1f;
+        float shootLeftHandDelta = 0.1f;
+
+        private bool kinectPause = false;
         private bool kinectShoot = false;
         private bool skeletonTracked = false;
         
@@ -35,10 +40,39 @@ namespace PuzzleBobbleInputHandling
         }
 
         float prevLeftHandY;
+        SkeletonPoint prevLeftHand;
         SkeletonFrame skelFrame;
         Skeleton[] skeletons;
+
+        public bool isPaused() {
+            return this.kinectPause;
+        }
+        private bool shootGestureDetect(SkeletonPoint currLeftHand, SkeletonPoint prevLeftHand, SkeletonPoint leftShoulder)
+        {
+            //if (leftHand.Y > centerShoulder.Y && prevLeftHandY < centerShoulder.Y)
+            //    return true;
+            if (currLeftHand.Y - leftShoulder.Y > shootLeftHandDelta &&
+                Math.Abs(currLeftHand.X - leftShoulder.X) < shootLeftHandDelta &&
+                prevLeftHand.Y < leftShoulder.Y)
+                return true;
+            return false;
+        }
+        private bool pauseGestureDetect(SkeletonPoint leftHand, SkeletonPoint rightHand, SkeletonPoint centerShoulder)
+        {
+            if (Math.Abs(rightHand.X - leftHand.X ) < pauseDelta  &&
+                Math.Abs(rightHand.Y - leftHand.Y) < pauseDelta &&
+                Math.Abs(rightHand.X - centerShoulder.X) < pauseDelta &&
+                Math.Abs(leftHand.X - centerShoulder.X) < pauseDelta &&
+                Math.Abs(rightHand.Y - centerShoulder.Y) < pauseDelta &&
+                Math.Abs(rightHand.Y - centerShoulder.Y) < pauseDelta)
+                    
+                return true;
+            return false;
+            
+        }
         private void OnSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
+           
             skelFrame = e.OpenSkeletonFrame();
             skeletons = new Skeleton[kinectSensor.SkeletonStream.FrameSkeletonArrayLength];          
             if (skelFrame != null)
@@ -49,10 +83,11 @@ namespace PuzzleBobbleInputHandling
                     {
                         this.skeletonTracked = true;
 
-                        var rightHand = skel.Joints[JointType.HandRight].Position;
-                        var centerShoulder = skel.Joints[JointType.ShoulderCenter].Position;
-                        var leftHand = skel.Joints[JointType.HandLeft].Position;
-
+                        SkeletonPoint rightHand = skel.Joints[JointType.HandRight].Position;
+                        SkeletonPoint centerShoulder = skel.Joints[JointType.ShoulderCenter].Position;
+                        SkeletonPoint leftHand = skel.Joints[JointType.HandLeft].Position;
+                        SkeletonPoint leftShoulder = skel.Joints[JointType.ShoulderLeft].Position;
+                      
                         this.rightHandPosition.X = rightHand.X;
                         this.rightHandPosition.Y = rightHand.Y;
                         this.leftHandPosition.X = leftHand.X;
@@ -62,32 +97,16 @@ namespace PuzzleBobbleInputHandling
                             this.kinectShoot = true;
                         else
                             this.kinectShoot = false;
+                    //    this.kinectShoot =  shootGestureDetect(leftHand, prevLeftHand, leftShoulder);
 
+                        prevLeftHand = leftHand;
                         prevLeftHandY = leftHand.Y;
 
                         float diff = rightHand.X - (centerShoulder.X + 0.25f);
 
                         this.kinectMovement = HorizontalGesture.getMovementFromPosition(centerShoulder.X, centerShoulder.Y, rightHand.X, rightHand.Y);
-                        // CircularGesture.getMovementFromPosition(centerShoulder.X , centerShoulder.Y , rightHand.X, rightHand.Y);
 
-                        //if (Math.Abs(diff) > minimumMovement)
-                        //{
-                        //    if (diff > 0)
-                        //    {
-                        //        this.kinectMovement = Movement.RIGHT;
-                        //    }
-                        //    else
-                        //    {
-                        //        this.kinectMovement = Movement.LEFT;
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    this.kinectMovement = Movement.IDLE;
-                        //}
-#if DEBUG
-                        //          Console.WriteLine(rightHand.X);
-#endif
+                        this.kinectPause = this.pauseGestureDetect(leftHand, rightHand, centerShoulder);
                         skelFrame.Dispose();
                         return;
                     }
