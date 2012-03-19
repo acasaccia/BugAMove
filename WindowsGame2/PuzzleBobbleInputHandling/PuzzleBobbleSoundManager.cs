@@ -22,7 +22,7 @@ namespace PuzzleBobbleInputHandling.Sound
 
             case SoundsEvent.BALL_EXPLOSION:
             {
-              //  OnBallExplosion.Play();
+                OnBallExplosion.Play();
                 break;       
             }
             case SoundsEvent.BALL_DOCKED:
@@ -53,7 +53,7 @@ namespace PuzzleBobbleInputHandling.Sound
             OnBallShoot = game.Content.Load<SoundEffect>("Sounds/waterdrop24");
             OnArrowMoved = game.Content.Load<SoundEffect>("Sounds/tick");
             OnWin = game.Content.Load<SoundEffect>("Sounds/youwin16");
-            //OnBallExplosion = game.Content.Load<SoundEffect>("Sounds/heavy-crate-smash");
+            OnBallExplosion = game.Content.Load<SoundEffect>("Sounds/zing");
             OnBallDocked = game.Content.Load<SoundEffect>("Sounds/glug1");
         }
     }

@@ -284,7 +284,7 @@ namespace WindowsGame2.menu
      //   private String title;
      //   private Texture2D texture;
         //private SpriteFont font;
-        private int firstChildDeltaY = 0;// = this.bounds.Height * 20 / 100 ;
+        private int firstChildDeltaY = 250;// = this.bounds.Height * 20 / 100 ;
         private int leftMargin;
         private int childHeight, childWidth;
       //  private Color color, focusColor;
@@ -308,7 +308,7 @@ namespace WindowsGame2.menu
             this.childHeight = (this.expandedBounds.Height * 10) / 100;
             this.childWidth = this.expandedBounds.Width;//(this.expandedBounds.Width * 10) / 100;
             this.leftMargin = 0;// this.expandedBounds.X + ((this.expandedBounds.Width * 10) / 100);
-            firstChildDeltaY = this.expandedBounds.Y + ((this.expandedBounds.Height * 20) / 100);
+            //firstChildDeltaY = this.expandedBounds.Y + ((this.expandedBounds.Height * 20) / 100);
             for (int i = 0; i < this.children.Count; i++) {
                 children[i].setBounds(new Rectangle(this.leftMargin, this.firstChildDeltaY + this.expandedBounds.Y + (this.childHeight * i),
                     this.childWidth, this.childHeight));

@@ -64,7 +64,7 @@ namespace WindowsGame2
        // game.Services.AddService(typeof(GameLogic), this.gameLogic);
 
         this.font = game.Content.Load<SpriteFont>("SimpleFont");
-        this.menuBackground = game.Content.Load<Texture2D>("fractal");
+        this.menuBackground = game.Content.Load<Texture2D>("bugamove");
         this.menuListBackground = game.Content.Load<Texture2D>("rootmenu");
         this.scoreBackground = game.Content.Load<Texture2D>("scorelistbg");
 
@@ -77,7 +77,7 @@ namespace WindowsGame2
         sublist.addChildComponent((new MenuEntryChoice("Credits", null, this.font, Color.White, Color.Yellow)));
        
         this.root.addChildComponent(list);
-        MenuEntryChoice quickPlay = new MenuEntryChoice("Quick Play", null, this.font, Color.White, Color.Yellow);
+        MenuEntryChoice quickPlay = new MenuEntryChoice("New Game", null, this.font, Color.White, Color.Yellow);
         quickPlay.actionPerformed += this.StartLevel;
         this.root.getChild(0).addChildComponent(quickPlay);
         MenuEntryChoice loadGame = new MenuEntryChoice("Load Game", null, this.font, Color.White, Color.Yellow);
