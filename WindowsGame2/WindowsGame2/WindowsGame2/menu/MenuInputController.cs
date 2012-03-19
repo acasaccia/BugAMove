@@ -82,7 +82,8 @@ namespace WindowsGame2.menu
                 //Console.WriteLine(rh.X);
                 //Console.WriteLine(rh.Y);
 
-                kinectAction(MenuTraverser.Actions.KINECT_HOVERING, currMouseCoord, (float)gameTime.ElapsedGameTime.TotalSeconds);
+                if (kinectAction != null)
+                    kinectAction(MenuTraverser.Actions.KINECT_HOVERING, currMouseCoord, (float)gameTime.ElapsedGameTime.TotalSeconds);
 
             }
             else if (mouseInputEnabled && cursorAction != null)

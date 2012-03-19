@@ -69,21 +69,7 @@ namespace PuzzleBobbleInputHandling
             if (!running)
                 return;
 
-            
-
-            //if (kinectSensor.IsRunning)
-            //{
-            //   // Console.WriteLine("WOW kinect is running");
-            ////    kinectSensor.SkeletonStream.
-            //    if (kinectSensor.SkeletonStream.IsEnabled)
-            //    {
-            //        Console.WriteLine("skeleton stream is enabled");
-
-            //    }
-            //}
-            //switch (this.inputDevice) {
-
-            //    case InputDevice.GAMEPAD: {
+      
                     // -----------GAMEPAD HANDLER ---------------------- 
             var state = Keyboard.GetState();
             if (state != null)

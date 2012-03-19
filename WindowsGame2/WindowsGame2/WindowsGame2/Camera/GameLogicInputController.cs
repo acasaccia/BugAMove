@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using PuzzleBobbleInputHandling;
 
 namespace WindowsGame2
 {
@@ -62,6 +63,11 @@ namespace WindowsGame2
                 if (state.IsKeyUp(Keys.P) && prev_kb.IsKeyDown(Keys.P)) {
                     this.gamePaused();
                 }
+                else if (KinectManager.getInstance().isPaused())
+                {
+                    this.gamePaused();
+                }
+
             }
             //exist at least one handler listening for camera events..
             if (changedCamera != null) {
