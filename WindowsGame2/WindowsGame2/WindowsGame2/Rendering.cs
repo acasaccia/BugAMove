@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using WindowsGame2;
 using Microsoft.FSharp.Core;
+using PuzzleBobbleInputHandling.Sound;
 
 
 namespace WindowsGame2
@@ -281,7 +282,7 @@ namespace WindowsGame2
     BoundingBox BoxBoundingBox;
     Texture2D background, background2;
 
-    SoundEffect clockTicking, doorSlam;
+  //  SoundEffect clockTicking, doorSlam;
 
     //Model skyDome;
     //pillarBox;
@@ -296,17 +297,7 @@ namespace WindowsGame2
       background = Game.Content.Load<Texture2D>("space");
       background2 = Game.Content.Load<Texture2D>("space-dust");
 
-      doorSlam = Game.Content.Load<SoundEffect>("Sounds/doorSlam");
-      clockTicking = Game.Content.Load<SoundEffect>("Sounds/clockTicking");
-
-      //this.world = Game.Content.Load<Model>("RoadSign");
-   
-      //this.BoxMergedBoundingSphere = new BoundingSphere();
-      //foreach (var mesh in Box.Meshes)
-      //{
-      //    this.BoxMergedBoundingSphere  = BoundingSphere.CreateMerged(this.BoxMergedBoundingSphere, mesh.BoundingSphere );
-      //}
-      //this.BoxMergedBoundingSphere = this.MergedBoundingSphere(Box);
+    
       this.BoxBoundingBox = this.BoundingBoxFromVertex(Box);
       base.LoadContent();
     }
@@ -332,7 +323,8 @@ namespace WindowsGame2
             if (!tickingPlaying)
             {
                 tickingPlaying = true;
-                this.clockTicking.Play(1.0f, 0.0f, 0.0f);
+                PuzzleBobbleSoundManager.playSound(PuzzleBobbleSoundManager.SoundsEvent.ROOF_TICK);
+             //   this.clockTicking.Play(1.0f, 0.0f, 0.0f);
             }
             tremblingOffset = (float)(rnd.NextDouble() / 75.0f);
         }
@@ -344,7 +336,8 @@ namespace WindowsGame2
 
         if (this.prevStep < PuzzleBobble.game_state.GridSteps.Value)
         {
-            this.doorSlam.Play(0.75f, 0.0f, 0.0f);
+            PuzzleBobbleSoundManager.playSound(PuzzleBobbleSoundManager.SoundsEvent.ROOF_DOWN);
+            //this.doorSlam.Play(0.75f, 0.0f, 0.0f);
         }
 
         this.prevStep = PuzzleBobble.game_state.GridSteps.Value;
