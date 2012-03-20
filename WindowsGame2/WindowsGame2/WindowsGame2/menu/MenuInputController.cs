@@ -37,10 +37,10 @@ namespace WindowsGame2.menu
         Point prevMouseCoord;
         MouseState prevMouseState;
 
-        private MouseState mouseState;
+        private MouseState currMouseState;
 
         public  Point currentMouseCoord() {
-            return currMouseCoord;
+            return new Point(currMouseCoord.X, currMouseCoord.Y);
         }
         public  bool isMouseInputEnabled()
         {
@@ -76,10 +76,14 @@ namespace WindowsGame2.menu
 
             //------------- KEYBOARD HANDLER ----------------------------
             var state = Keyboard.GetState();
-           
+            bool keyPressed = false;
             if (menuAction != null) {
-
-                
+                Keys[] f = state.GetPressedKeys();
+                int foo = f.Length;
+                if (foo > 0)
+                {
+                    keyPressed = true;
+                }
               //  Console.WriteLine("not null MenuAction");
                 if (state.IsKeyUp(Keys.Up) && prev_kb.IsKeyDown(Keys.Up))
                     menuAction(MenuTraverser.Actions.MOVE_UP);
@@ -117,12 +121,17 @@ namespace WindowsGame2.menu
             }
             
             prev_kb = state;
-
+            if (keyPressed)
+            {
+                base.Update(gameTime);
+                return;
+            }
             //------------- KINECT HANDLER ----------------------------
 
             if (PuzzleBobbleInputHandling.KinectManager.getInstance().isTracking())
             {
                 prevMouseCoord = currMouseCoord;
+                prevMouseState = currMouseState;
 
                 currMouseCoord = this.convertKinectCoordsToViewport(PuzzleBobbleInputHandling.KinectManager.getInstance().getRightHandPosition());
 
@@ -134,32 +143,34 @@ namespace WindowsGame2.menu
                     kinectAction(MenuTraverser.Actions.KINECT_HOVERING, currMouseCoord, (float)gameTime.ElapsedGameTime.TotalSeconds);
 
             }
-            else if (mouseInputEnabled && cursorAction != null)
+            else 
+            if (mouseInputEnabled && cursorAction != null)
             {
 
                 //------------- MOUSE HANDLER ----------------------------
 
-                mouseState = Mouse.GetState();
+                prevMouseState = currMouseState;
+                currMouseState = Mouse.GetState();
 
                 prevMouseCoord = currMouseCoord;
                 
                 //TODO..add prev mouse state
                // prevMouseState = 
-                currMouseCoord.X = mouseState.X;
-                currMouseCoord.Y = mouseState.Y;
+                currMouseCoord = new Point(currMouseState.X, currMouseState.Y);
+                //currMouseCoord = mouseState.Y;
 
                 //TODO: check if button is pressed
                 if (menuAction != null)
                 {
-                    if (mouseState.LeftButton == ButtonState.Pressed)
+                    if (currMouseState.LeftButton == ButtonState.Pressed && prevMouseState.LeftButton != ButtonState.Pressed)
                         menuAction(MenuTraverser.Actions.ACTION_PERFORMED);
-                    else if (mouseState.RightButton == ButtonState.Pressed )
+                    else if (currMouseState.RightButton == ButtonState.Pressed && prevMouseState.RightButton != ButtonState.Pressed)
                         menuAction(MenuTraverser.Actions.MOVE_BACKWARD);
                 }
 
                 //if (prevMouseCoord != currMouseCoord)
-                if (cursorAction != null)
-                    cursorAction(MenuTraverser.Actions.MOUSE_MOVED, currMouseCoord);
+                if (cursorAction != null && prevMouseCoord != currMouseCoord)
+                    cursorAction(MenuTraverser.Actions.MOUSE_MOVED, new Point(currMouseCoord.X, currMouseCoord.Y));
 
             }
 

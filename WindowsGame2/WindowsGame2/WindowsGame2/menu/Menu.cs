@@ -65,7 +65,7 @@ namespace WindowsGame2
 
         this.font = game.Content.Load<SpriteFont>("SimpleFont");
         this.menuBackground = game.Content.Load<Texture2D>("bugamove");
-        this.menuListBackground = game.Content.Load<Texture2D>("rootmenu");
+        this.menuListBackground = game.Content.Load<Texture2D>("rootmenu");//game.Content.Load<Texture2D>("background");// 
         this.scoreBackground = game.Content.Load<Texture2D>("scorelistbg");
 
         this.root = new RootMenuItem(this.game.graphics.PreferredBackBufferHeight, this.game.graphics.PreferredBackBufferWidth, this.menuBackground);
