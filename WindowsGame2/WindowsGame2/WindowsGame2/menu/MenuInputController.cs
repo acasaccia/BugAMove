@@ -35,6 +35,7 @@ namespace WindowsGame2.menu
         private bool mouseInputEnabled;
         Point currMouseCoord;
         Point prevMouseCoord;
+        MouseState prevMouseState;
 
         private MouseState mouseState;
 
@@ -141,7 +142,9 @@ namespace WindowsGame2.menu
                 mouseState = Mouse.GetState();
 
                 prevMouseCoord = currMouseCoord;
-
+                
+                //TODO..add prev mouse state
+               // prevMouseState = 
                 currMouseCoord.X = mouseState.X;
                 currMouseCoord.Y = mouseState.Y;
 
@@ -150,7 +153,7 @@ namespace WindowsGame2.menu
                 {
                     if (mouseState.LeftButton == ButtonState.Pressed)
                         menuAction(MenuTraverser.Actions.ACTION_PERFORMED);
-                    else if (mouseState.RightButton == ButtonState.Pressed)
+                    else if (mouseState.RightButton == ButtonState.Pressed )
                         menuAction(MenuTraverser.Actions.MOVE_BACKWARD);
                 }
 

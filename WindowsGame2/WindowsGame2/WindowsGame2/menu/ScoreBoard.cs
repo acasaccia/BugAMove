@@ -51,8 +51,8 @@ namespace WindowsGame2.menu
 
             if (this.expanded)
             {
-                if (this.texture!= null)
-                    spriteBatch.Draw(this.texture, this.getFather().getBounds(), Color.White);
+                if (this.texture != null)
+                    spriteBatch.Draw(this.texture, this.expandedBounds, Color.White);//this.getFather().getBounds(), Color.White);
                 Point TopLeftMargin = new Point(this.bounds.X + 30, this.bounds.Y + 30);
                 int scoreYDelta = 30;
                 int count = 0;
