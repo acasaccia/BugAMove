@@ -13,8 +13,9 @@ namespace PuzzleBobbleInputHandling.Sound
     public class PuzzleBobbleSoundManager 
     {
         private Game game;
-        public enum SoundsEvent { BALL_SHOOT, BALL_DOCKED, ARROW_MOVED, BALL_EXPLOSION, WIN}
-        private static SoundEffect OnBallShoot, OnArrowMoved, OnWin, OnBallExplosion, OnBallDocked;
+        public enum SoundsEvent { BALL_SHOOT, BALL_DOCKED, ARROW_MOVED, BALL_EXPLOSION, WIN, ROOF_TICK, ROOF_DOWN}
+        private static SoundEffect OnBallShoot, OnArrowMoved, OnWin, OnBallExplosion, OnBallDocked,clockTicking,doorSlam;
+   
        // private PuzzleBobbleSoundManager() { }
         public static void playSound(SoundsEvent e) { 
             switch (e)
@@ -42,7 +43,17 @@ namespace PuzzleBobbleInputHandling.Sound
                 OnWin.Play();
                 break;
             }
+            case SoundsEvent.ROOF_TICK: {
+                clockTicking.Play();
+                break;
+            }
+            case SoundsEvent.ROOF_DOWN:
+            {
+                doorSlam.Play(0.75f, 0.0f, 0.0f);
+                break;
+            }
 		    default:
+           
                 break;
 	        }
         }
@@ -55,6 +66,8 @@ namespace PuzzleBobbleInputHandling.Sound
             OnWin = game.Content.Load<SoundEffect>("Sounds/youwin16");
             OnBallExplosion = game.Content.Load<SoundEffect>("Sounds/zing");
             OnBallDocked = game.Content.Load<SoundEffect>("Sounds/glug1");
+            doorSlam = game.Content.Load<SoundEffect>("Sounds/doorSlam");
+            clockTicking = game.Content.Load<SoundEffect>("Sounds/clockTicking");
         }
     }
 }
