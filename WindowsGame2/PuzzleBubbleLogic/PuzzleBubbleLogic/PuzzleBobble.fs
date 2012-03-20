@@ -468,11 +468,12 @@ let DockBall (game_state: GameState, grid: Option<Ball> [,] , ball : Ball) : Lis
             let l :List<int * int> = GetSameColorNeighs(grid, row, col , ball.color)
             GridBallsSetUnvisited(!game_state.Grid)
             if l.Length >= BallClusterSize then
+                Sound.PuzzleBobbleSoundManager.playSound(Sound.PuzzleBobbleSoundManager.SoundsEvent.BALL_EXPLOSION)
                 for col in 0 .. BallsPerLine - 1 do          
                     VisitGridExcluding (grid, 0, col , l) 
                 deletedList.contents <- List.concat [ DeleteUnvisitedGridBalls(grid)  ; !game_state.FallingBalls]
                 GridBallsSetUnvisited(!game_state.Grid)
-                Sound.PuzzleBobbleSoundManager.playSound(Sound.PuzzleBobbleSoundManager.SoundsEvent.BALL_EXPLOSION)
+                
             
             if l.Length >= BallClusterSize then
                 UpdateScore(l.Length, game_state)
