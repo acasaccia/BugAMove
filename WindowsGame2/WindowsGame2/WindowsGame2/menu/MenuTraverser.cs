@@ -240,7 +240,9 @@ namespace WindowsGame2.menu
             {
             
                 case Actions.MOUSE_MOVED:
-                        if (coord.X >= bounds.X && coord.X <= bounds.X + bounds.Width) { 
+                        var b = this.currentSelectedComponent.getBounds();
+                        int x = (int)this.currentSelectedComponent.getFont().MeasureString(this.currentSelectedComponent.getName()).X;
+                        if (coord.X > (b.Width / 2) - (x / 2) && coord.X < (b.Width / 2) + (x / 2)) {
             
                             if (coord.Y < bounds.Y && this.currentComponentIndex > 0){
                                 this.up();
