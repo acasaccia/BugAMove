@@ -64,11 +64,11 @@ namespace WindowsGame2
        // game.Services.AddService(typeof(GameLogic), this.gameLogic);
 
         this.font = game.Content.Load<SpriteFont>("SimpleFont");
-        this.menuBackground = game.Content.Load<Texture2D>("bugamove");
+        //this.menuBackground = game.Content.Load<Texture2D>("bugamove");
         this.menuListBackground = game.Content.Load<Texture2D>("rootmenu");//game.Content.Load<Texture2D>("background");// 
         this.scoreBackground = game.Content.Load<Texture2D>("scorelistbg");
 
-        this.root = new RootMenuItem(this.game.graphics.PreferredBackBufferHeight, this.game.graphics.PreferredBackBufferWidth, this.menuBackground);
+        this.root = new RootMenuItem(this.game.graphics.PreferredBackBufferHeight, this.game.graphics.PreferredBackBufferWidth, null);
         VerticalListMenuContainer list = new VerticalListMenuContainer("rootmenu", this.menuListBackground, this.font, Color.White, Color.Yellow);
         VerticalListMenuContainer sublist = new VerticalListMenuContainer("Info", this.menuListBackground, this.font, Color.White, Color.Yellow);
 
