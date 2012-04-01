@@ -42,6 +42,7 @@ namespace WindowsGame2
       private Matrix projection;
       public  Camera camera;
       private Vector3 cameraDefaultPosition;
+      private IHUDService hud;
 
       private bool running;
 
@@ -69,6 +70,7 @@ namespace WindowsGame2
       this.camera.updateViewMatrix();
  
       game.Services.AddService(typeof(Camera), this.camera);
+      this.hud = game.Services.GetService(typeof(IHUDService)) as IHUDService;
     }
 
     
@@ -419,18 +421,20 @@ namespace WindowsGame2
         //    this.DrawModel(Box, 1.0f, new Vector3(PuzzleBobble.BoxDimension.X + size - ce.X, +size - ce.Y + (size * 2 * i), -size), Vector3.Zero, null);
         //}
 
+        if(this.hud == null)
+            this.hud = game.Services.GetService(typeof(IHUDService)) as IHUDService;
         
         if (PuzzleBobble.game_state.LevelStatus.Status.Value == PuzzleBobble.GameStatus.Ready)
         {
-            this.DrawMessage("Enter to start");
+            this.hud.printMessage("Press Enter or\nRaise your left hand\nto start");
         }
         else if (PuzzleBobble.game_state.LevelStatus.Status.Value == PuzzleBobble.GameStatus.Win)
         {
-            this.DrawMessage("Level Completed!");
+            this.hud.printMessage("You\nWin!");
         }
         else if (PuzzleBobble.game_state.LevelStatus.Status.Value == PuzzleBobble.GameStatus.Lost)
         {
-            this.DrawMessage("You Lost!");
+            this.hud.printMessage("You\nLost!");
         }
         base.Draw(gameTime);
 

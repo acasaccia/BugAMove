@@ -109,6 +109,8 @@ namespace WindowsGame2
         Menu menu = new Menu(this.game);
         Game.Components.Add(menu);
         Camera cam = Game.Services.GetService(typeof(Camera)) as Camera;
+        IHUDService hud = Game.Services.GetService(typeof(IHUDService)) as IHUDService;
+        hud.clearMessage();
         cam.resetCamera();
         this.gameLogicInputController.pause();
     }
@@ -141,6 +143,7 @@ namespace WindowsGame2
         
     }
     public void OnLoadGame() {
+
         using (var stream = File.Open("game_status.sav", FileMode.Open))
         {
             var binary_formatter = new BinaryFormatter();
@@ -169,6 +172,7 @@ namespace WindowsGame2
         this.soundManager = new PuzzleBobbleSoundManager(this.game);
         GameLogicInputController inputController = new GameLogicInputController(this.game);
         game.Components.Add(inputController);
+        this.hud = game.Services.GetService(typeof(IHUDService)) as IHUDService;
 
     }
 
@@ -236,8 +240,13 @@ namespace WindowsGame2
         //}
     }
 
+    private IHUDService hud;
+
     public override void Update(GameTime gameTime)
     {
+
+
+
         //if (InputManager.getState().GamePaused)
         //    this.pause();
        // Console.WriteLine("GameLogic: Update");
@@ -276,7 +285,11 @@ namespace WindowsGame2
                     }
                 default:
                     {
-                      
+                        if (this.hud == null)
+                            this.hud = game.Services.GetService(typeof(IHUDService)) as IHUDService;
+        
+                        if (this.hud != null)
+                            this.hud.clearMessage();
                         //n    Console.WriteLine("GameLogic: update");
                         PuzzleBobble.update_state(dt);
                         PuzzleBobble.update_script();

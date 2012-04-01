@@ -26,7 +26,7 @@ namespace WindowsGame2
   public class Menu : DrawableGameComponent , IMenuService
   {
       private SpriteFont font;
-      private Texture2D menuBackground;
+      private Texture2D mouseCursor;
       private Texture2D menuListBackground, scoreBackground;
 
       private Texture2D []cursorAnimation;
@@ -54,7 +54,7 @@ namespace WindowsGame2
     {
         Console.WriteLine("Menu Constructor");
         this.game =(Game1) game;
-        this.cursorAnimation = new Texture2D[5];
+        this.cursorAnimation = new Texture2D[10];
         //if (Game.Services.GetService(typeof(IMenuService)) != null)
         //    Console.WriteLine("IMenuService already exist...BUG");
         Game.Services.AddService(typeof(IMenuService) ,this);
@@ -143,12 +143,18 @@ namespace WindowsGame2
     protected override void LoadContent()
     {
 
-        
-        this.cursorAnimation[1]  = Game.Content.Load<Texture2D>("mouse_cursor_1");
-        this.cursorAnimation[2] = Game.Content.Load<Texture2D>("mouse_cursor_2");
-        this.cursorAnimation[3] = Game.Content.Load<Texture2D>("mouse_cursor_3");
-        this.cursorAnimation[4] = Game.Content.Load<Texture2D>("mouse_cursor_4");
-        this.cursorAnimation[0] = Game.Content.Load<Texture2D>("mouse_cursor_32_32");
+        this.cursorAnimation[0] = Game.Content.Load<Texture2D>("cursor_0");
+        this.cursorAnimation[1] = Game.Content.Load<Texture2D>("cursor_1");
+        this.cursorAnimation[2] = Game.Content.Load<Texture2D>("cursor_2");
+        this.cursorAnimation[3] = Game.Content.Load<Texture2D>("cursor_3");
+        this.cursorAnimation[4] = Game.Content.Load<Texture2D>("cursor_4");
+        this.cursorAnimation[5] = Game.Content.Load<Texture2D>("cursor_5");
+        this.cursorAnimation[6] = Game.Content.Load<Texture2D>("cursor_6");
+        this.cursorAnimation[7] = Game.Content.Load<Texture2D>("cursor_7");
+        this.cursorAnimation[8] = Game.Content.Load<Texture2D>("cursor_8");
+        this.cursorAnimation[9] = Game.Content.Load<Texture2D>("cursor_9");
+
+        this.mouseCursor = Game.Content.Load<Texture2D>("mouse_cursor_32_32");
 
         this.currentCursorIndex = 0;// this.cursorAnimation[0];
 
@@ -165,6 +171,8 @@ namespace WindowsGame2
         Game.Exit();
     }
 
+    //TODO: clean this :)
+    static bool hudExists = false;
     public void StartLevel() {
         Console.WriteLine("Menu: StartLevel");
      
@@ -178,7 +186,12 @@ namespace WindowsGame2
       
         InputManager inputManager = Game.Services.GetService(typeof(InputManager)) as InputManager;
         inputManager.start();
-        Game.Components.Add(new HUDPuzzleBobble(this.game));
+
+        if (!hudExists)
+        {
+            hudExists = true;
+            Game.Components.Add(new HUDPuzzleBobble(this.game));
+        }
         renderer.start();
 
 
@@ -195,7 +208,6 @@ namespace WindowsGame2
         GameLogicInputController inputController = new GameLogicInputController(this.game);
         InputManager inputManager = new InputManager(game);
         game.Components.Add(inputManager);
-
         game.Components.Add(inputController);
  
     
@@ -203,16 +215,20 @@ namespace WindowsGame2
  
     public override void Draw(GameTime gameTime)
     {
-        int elapsedTime = (int)( this.traverser.hoverTime) % 5;
+        int elapsedTime = (int)(this.traverser.hoverTime * 2) % 10;
         this.currentCursorIndex = elapsedTime;
-    //  GraphicsDevice.Clear(Color.Black);
-      this.spriteBatch.Begin();
+        GraphicsDevice.Clear(Color.CornflowerBlue);
+        this.spriteBatch.Begin();
         root.paintComponent(this.spriteBatch);
         Point currMouseCoord = this.menuInputController.currentMouseCoord();
-        this.spriteBatch.Draw(this.cursorAnimation[currentCursorIndex], new Rectangle(currMouseCoord.X, currMouseCoord.Y, this.cursorAnimation[currentCursorIndex].Width, this.cursorAnimation[currentCursorIndex].Height), Color.White);
-    //  this.spriteBatch.DrawString(this.font, "hello world", new Vector2(0, 0), Color.Red, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
-      this.spriteBatch.End();
-      base.Draw(gameTime);
+        
+        if ( KinectManager.getInstance().isTracking() )
+            this.spriteBatch.Draw(this.cursorAnimation[currentCursorIndex], new Rectangle(currMouseCoord.X - 16, currMouseCoord.Y - 16, this.cursorAnimation[currentCursorIndex].Width, this.cursorAnimation[currentCursorIndex].Height), Color.White);
+        else
+            this.spriteBatch.Draw(this.mouseCursor, new Rectangle(currMouseCoord.X - 16, currMouseCoord.Y - 16, this.cursorAnimation[currentCursorIndex].Width, this.cursorAnimation[currentCursorIndex].Height), Color.White);
+        
+        this.spriteBatch.End();
+        base.Draw(gameTime);
     }
   }
 }

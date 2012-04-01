@@ -7,13 +7,22 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace WindowsGame2
 {
-    class HUDPuzzleBobble : Microsoft.Xna.Framework.DrawableGameComponent
+
+    public interface IHUDService
+    {
+
+        void printMessage(String msg);
+        void clearMessage();
+    }
+    class HUDPuzzleBobble : Microsoft.Xna.Framework.DrawableGameComponent, IHUDService
     {
         private SpriteBatch spriteBatch;
         private SpriteFont timeFont, statsFont;
         private Color timeColor, statsTitleColor, statsColor;
         private Game1 game;
         Vector2 statsPosition1UP;
+
+        private String message;
         public HUDPuzzleBobble(Game1 game)
             : base(game)
         {
@@ -25,6 +34,8 @@ namespace WindowsGame2
             this.statsColor = Color.White;
            
             this.statsPosition1UP =  new Vector2( 0.035f * this.game.graphics.PreferredBackBufferWidth, 0.02f * this.game.graphics.PreferredBackBufferHeight);
+
+            Game.Services.AddService(typeof(IHUDService), this);
         }
         public override void Initialize()
         {
@@ -36,6 +47,14 @@ namespace WindowsGame2
         Rectangle rect;
         Rectangle rect2;
 
+        public void printMessage(String msg)
+        { 
+            this.message = msg;
+        }
+        public void clearMessage()
+        {
+            this.message = null;
+        }
         protected override void LoadContent()
         {
             hud = game.Content.Load<Texture2D>("hud");
@@ -53,7 +72,19 @@ namespace WindowsGame2
         {
             base.Dispose(disposing);
         }
+        private void DrawMessage(string message)
+        {
 
+            Vector2 messageDimension = this.timeFont.MeasureString(message);
+            Vector2 messagePosition = new Vector2(
+                this.game.graphics.PreferredBackBufferWidth / 2 - messageDimension.X / 2,
+                this.game.graphics.PreferredBackBufferHeight / 2 - messageDimension.Y / 2
+            );
+         //   spriteBatch.Begin();
+            spriteBatch.Draw(hud, new Rectangle((int)messagePosition.X - 40, (int)messagePosition.Y - 10, (int)messageDimension.X + 70, (int)messageDimension.Y + 20 ), Color.White);
+            spriteBatch.DrawString(this.timeFont, message, messagePosition, Color.White, 0.0f, new Vector2(0, 0), new Vector2(1, 1), SpriteEffects.None, 0);
+         //   spriteBatch.End();
+        }
         public override void Draw(GameTime gameTime)
         {
             //spriteBatch.Draw(hud, Vector2.Zero, Color.White);
@@ -78,7 +109,9 @@ namespace WindowsGame2
                 0.0f, Vector2.Zero, Vector2.UnitX + Vector2.UnitY, SpriteEffects.None, 0);
 
             //Dictionary<string, PuzzleBobble.ColorCounter> d = PuzzleBobble.game_state.LevelStatus.AvailableColors.Value;
-            
+            if (this.message != null)
+                DrawMessage(this.message);
+
             spriteBatch.End();
             base.Draw(gameTime);
         }

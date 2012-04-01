@@ -107,7 +107,7 @@ namespace WindowsGame2.menu
         {
             int elapsedTime = (int)(this.traverser.hoverTime) % 5;
             this.currentCursorIndex = elapsedTime;
-            GraphicsDevice.Clear(Color.Black);
+            //GraphicsDevice.Clear(Color.Black);
             this.spriteBatch.Begin();
             root.paintComponent(this.spriteBatch);
             Point currMouseCoord = this.menuInputController.currentMouseCoord();
