@@ -16,6 +16,7 @@ namespace PuzzleBobbleInputHandling
         private Movement kinectMovement = Movement.IDLE;
         private Vector2 leftHandPosition;
         private Vector2 rightHandPosition;
+        private Vector2 centerShoulderPosition;
         
         float pauseDelta = 0.05f;
         float shootLeftHandDelta = 0.1f;
@@ -59,12 +60,31 @@ namespace PuzzleBobbleInputHandling
                 return true;
             return false;
         }
-        private bool continueGesture(SkeletonPoint centerShoulder, SkeletonPoint head) 
+
+        private bool continueGesture(SkeletonPoint hand, SkeletonPoint head) 
         {
-            if (centerShoulder.Y < head.Y)
+            if (hand.Y > head.Y)
                 return true;
             return false;
         }
+
+        private bool pauseGestureHandsOverHeadDetect( JointCollection joints )
+        {
+            //SkeletonPoint handRight = joints[JointType.HandRight].Position;
+            //SkeletonPoint handLeft = joints[JointType.HandLeft].Position;
+            //SkeletonPoint head = joints[JointType.Head].Position;
+
+            //int[] xPositions = { handRight.X, handLeft.X, head.X };
+            //diffX = 
+
+            //if (Math.Abs() < pauseDelta &&
+            //    Math.Abs() < pauseDelta )
+            //{
+            //    return true;
+            //}
+            return false;
+        }
+
         private bool pauseGesturePrayDetect(SkeletonPoint leftHand, SkeletonPoint rightHand, SkeletonPoint centerShoulder,
             SkeletonPoint leftElbow, SkeletonPoint rightElbow)
         {
@@ -76,12 +96,14 @@ namespace PuzzleBobbleInputHandling
             }
             return false;
         }
+
         private bool goBackGestureDetect(SkeletonPoint head, SkeletonPoint leftHand)
         {
             if (leftHand.Y > head.Y)
                 return true;
             return false;
         }
+
         private bool pauseGestureDetect(SkeletonPoint leftHand, SkeletonPoint rightHand, SkeletonPoint centerShoulder)
         {
             if (Math.Abs(rightHand.X - leftHand.X ) < pauseDelta  &&
@@ -95,6 +117,7 @@ namespace PuzzleBobbleInputHandling
             return false;
             
         }
+
         private void OnSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
            
@@ -104,7 +127,7 @@ namespace PuzzleBobbleInputHandling
             {
                 skelFrame.CopySkeletonDataTo(skeletons);
                 foreach (Skeleton skel in skeletons) {
-                    if (skel.TrackingState >= SkeletonTrackingState.PositionOnly)
+                    if (skel.TrackingState >= SkeletonTrackingState.Tracked)
                     {
                         this.skeletonTracked = true;
 
@@ -117,13 +140,15 @@ namespace PuzzleBobbleInputHandling
                         this.rightHandPosition.Y = rightHand.Y;
                         this.leftHandPosition.X = leftHand.X;
                         this.leftHandPosition.Y = leftHand.Y;
+                        this.centerShoulderPosition.X = centerShoulder.X;
+                        this.centerShoulderPosition.Y = centerShoulder.Y;
 
-                        if (leftHand.Y > centerShoulder.Y && prevLeftHandY < centerShoulder.Y)
+                        if (leftHand.Y > centerShoulder.Y && prevLeftHandY < (centerShoulder.Y - 0.002f) )
                             this.kinectShoot = true;
                         else
                             this.kinectShoot = false;
                     //    this.kinectShoot =  shootGestureDetect(leftHand, prevLeftHand, leftShoulder);
-                        this.kinectContinue = this.continueGesture(rightHand, skel.Joints[JointType.Head].Position);
+                        this.kinectContinue = this.continueGesture(leftHand, skel.Joints[JointType.Head].Position);
                         prevLeftHand = leftHand;
                         prevLeftHandY = leftHand.Y;
 
@@ -131,10 +156,11 @@ namespace PuzzleBobbleInputHandling
                         float diff = rightHand.X - (centerShoulder.X + 0.25f);
 
                         this.kinectMovement = HorizontalGesture.getMovementFromPosition(centerShoulder.X, centerShoulder.Y, rightHand.X, rightHand.Y);
+                        // this.kinectMovement = HorizontalGesture.getMovement( skel.Joints );
 
-                       // this.kinectPause = this.pauseGestureDetect(leftHand, rightHand, centerShoulder);
-                        this.kinectPause = pauseGesturePrayDetect(leftHand, rightHand, centerShoulder,
-                            skel.Joints[JointType.ElbowLeft].Position, skel.Joints[JointType.ElbowRight].Position);
+                        // this.kinectPause = pauseGestureHandsOverHeadDetect(skel.Joints);
+                        // this.kinectPause = pauseGestureDetect(leftHand, rightHand, centerShoulder);
+                        this.kinectPause = pauseGesturePrayDetect(leftHand, rightHand, centerShoulder, skel.Joints[JointType.ElbowLeft].Position, skel.Joints[JointType.ElbowRight].Position);
                         skelFrame.Dispose();
                         return;
                     }
@@ -173,6 +199,10 @@ namespace PuzzleBobbleInputHandling
         public Vector2 getLeftHandPosition()
         {
             return this.leftHandPosition;
+        }
+        public Vector2 getCenterShoulderPosition()
+        {
+            return this.centerShoulderPosition;
         }
         private void SetSensor(KinectSensor newSensor)
         {

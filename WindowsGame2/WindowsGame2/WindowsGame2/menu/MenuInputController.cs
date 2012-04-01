@@ -133,7 +133,7 @@ namespace WindowsGame2.menu
                 prevMouseCoord = currMouseCoord;
                 prevMouseState = currMouseState;
 
-                currMouseCoord = this.convertKinectCoordsToViewport(PuzzleBobbleInputHandling.KinectManager.getInstance().getRightHandPosition());
+                currMouseCoord = this.convertKinectCoordsToViewport(PuzzleBobbleInputHandling.KinectManager.getInstance().getRightHandPosition(), PuzzleBobbleInputHandling.KinectManager.getInstance().getCenterShoulderPosition());
 
                 //Console.WriteLine("-----------");
                 //Console.WriteLine(rh.X);
@@ -177,11 +177,41 @@ namespace WindowsGame2.menu
             base.Update(gameTime);
         }
 
-        private Point convertKinectCoordsToViewport(Vector2 vector2)
+        static float maxDiffX = 0.6f;
+        static float maxDiffY = maxDiffX / 2;
+        private Point convertKinectCoordsToViewport(Vector2 hand, Vector2 centerShoulder)
         {
             Point point;
-            point.X = (int)((vector2.X + 1.0f) / 2.0f * this.Game.GraphicsDevice.Viewport.Width);
-            point.Y = this.Game.GraphicsDevice.Viewport.Height - (int)((vector2.Y + 1.0f) / 2.0f * this.Game.GraphicsDevice.Viewport.Height);
+
+            //if (hand.X < -maxDiffX)
+            //    hand.X = -maxDiffX;
+            //if (hand.X > maxDiffX)
+            //    hand.X = maxDiffX;
+            //if (hand.Y < -maxDiffY)
+            //    hand.Y = -maxDiffY;
+            //if (hand.Y > maxDiffY)
+            //    hand.Y = maxDiffY;
+
+            //point.X = (int)((hand.X + maxDiffX) / (2.0f * maxDiffX) * this.Game.GraphicsDevice.Viewport.Width);
+            //point.Y = this.Game.GraphicsDevice.Viewport.Height - (int)((hand.Y + maxDiffY) / (2.0f * maxDiffY) * this.Game.GraphicsDevice.Viewport.Height);
+
+            float diffX = hand.X - centerShoulder.X;
+            float diffY = hand.Y - centerShoulder.Y;
+            // clamp diffX to maxDiff
+            if (diffX <= 0)
+                diffX = 0;
+            if (diffX > maxDiffX)
+                diffX = maxDiffX;
+
+            if (diffY <= -maxDiffY)
+                diffY = -maxDiffY;
+            if (diffY > maxDiffY)
+                diffY = maxDiffY;
+
+            diffY += maxDiffY;
+
+            point.X = (int)(diffX * this.Game.GraphicsDevice.Viewport.Width / maxDiffX);
+            point.Y = this.Game.GraphicsDevice.Viewport.Height - (int)(diffY * this.Game.GraphicsDevice.Viewport.Height / (2 * maxDiffY));
             return point;
         }
         public override void Initialize()

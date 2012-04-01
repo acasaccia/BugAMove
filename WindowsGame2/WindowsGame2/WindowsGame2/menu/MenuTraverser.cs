@@ -215,9 +215,13 @@ namespace WindowsGame2.menu
                     }
                     else {
                         var b = this.currentSelectedComponent.getBounds();
-                        int x = (int)this.currentSelectedComponent.getFont().MeasureString(this.currentSelectedComponent.getName()).X;
+                        Vector2 strSize = this.currentSelectedComponent.getFont().MeasureString(this.currentSelectedComponent.getName());
+                        int x = (int)strSize.X;
+                        //int y = (int)strSize.Y;
                         if (coord.X > (b.Width / 2) - (x / 2) &&
-                            coord.X < (b.Width / 2) + (x / 2))
+                            coord.X < (b.Width / 2) + (x / 2) &&
+                            coord.Y >  b.Y  &&
+                            coord.Y < b.Height + b.Y)
                             this.hoverTime += dt;
                         else
                             this.hoverTime = 0;
